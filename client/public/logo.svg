@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #2563eb; }      /* Tailwind blue */
+    .icon { fill: #ffffff; }    /* White roof + person */
+  </style>
+
+  <!-- Circular background -->
+  <circle class="bg" cx="32" cy="32" r="32"/>
+
+  <!-- Bigger roof -->
+  <path class="icon" d="M16 30 L32 16 L48 30 Z"/>
+
+  <!-- Bigger head -->
+  <circle class="icon" cx="32" cy="36" r="4"/>
+
+  <!-- Bigger body -->
+  <rect class="icon" x="29" y="40" width="6" height="10" rx="1.5"/>
+</svg>
