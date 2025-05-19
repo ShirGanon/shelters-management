@@ -1,6 +1,7 @@
 import {React, useEffect, useState} from 'react'
 import axios from 'axios'
 
+import MapView from './MapView'
 export default function Main() {
   const [shelters, setShelters] = useState([])
 
@@ -17,13 +18,14 @@ export default function Main() {
     <div>
       <h1>Welcome to the shelters API</h1>
       <h2>List of shelters</h2>
-      <ul>
+      {/* <ul>
         {shelters.map((shelter) => (
           <li key={shelter.id}>
             {shelter.name} - {shelter.location}
           </li>
         ))}
-      </ul>
+      </ul> */}
+       <MapView imageUrl="../HIT.png" />
     </div>
   )
 }

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Shelter A",
+    "lat": 32.0175,
+    "lng": 34.7448,
+    "status": "Available",
+    "capacity": 15,
+    "accessible": true
+  },
+  {
+    "id": 2,
+    "name": "Shelter B",
+    "lat": 32.0169,
+    "lng": 34.7460,
+    "status": "Full",
+    "capacity": 0,
+    "accessible": false
+  }
+]
