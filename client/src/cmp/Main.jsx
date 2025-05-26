@@ -6,7 +6,7 @@ export default function Main() {
   const [shelters, setShelters] = useState([])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/list').then((res) => {
+    axios.get('http://localhost:8080/shelters/list').then((res) => {
       setShelters(res.data ? res.data : []);
     }).catch((err) => {
       setShelters([]);
@@ -15,7 +15,7 @@ export default function Main() {
   }, [])
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col justify-center items-center">
       <h1>Welcome to the shelters API</h1>
       <h2>List of shelters</h2>
       {/* <ul>

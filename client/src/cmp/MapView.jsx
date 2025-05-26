@@ -1,118 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, ImageOverlay, Marker, useMapEvents, Polygon } from 'react-leaflet';
 import L from 'leaflet';
+import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 
 const imageBounds = [[0, 0], [1000, 1000]];
 
 // מערך כל הבניינים עם הקואורדינטות
 const buildings = [
-  {
-    id: 1,
-    name: "בניין 8",
-    polygon: [
-  [489, 1],
-  [557, 0],
-  [555, 32],
-  [490, 31],
-  [490, 15]
-    ]
-  },
-  {
-    id: 2,
-    name: "בניין 7",
-    polygon: [
-      [243, 184],
-      [223, 188],
-      [223, 222],
-      [242, 224]
-    ]
-  },
-  {
-    id: 3,
-    name: "בניין 6",
-    polygon: [
-      [167, 248],
-      [193, 207],
-      [213, 207],
-      [211, 266]
-    ]
-  },
-  {
-    id: 4,
-    name: "בניין 5",
-    polygon: [
-      [110, 188],
-      [105, 277],
-      [128, 280],
-      [127, 188]
-    ]
-  },
-  {
-    id: 5,
-    name: "בניין 4",
-    polygon: [
-      [125, 360],
-      [125, 393],
-      [144, 393],
-      [143, 361]
-    ]
-  },
-  {
-    id: 6,
-    name: "בניין 3",
-    polygon: [
-      [50, 354],
-      [52, 404],
-      [85, 413],
-      [91, 356]
-    ]
-  },
-  {
-    id: 7,
-    name: "בניין 2",
-    polygon: [
-      [57, 426],
-      [60, 468],
-      [87, 469],
-      [89, 426]
-    ]
-  },
-  {
-    id: 8,
-    name: "בניין 1",
-    polygon: [
-      [66, 498],
-      [69, 551],
-      [93, 552],
-      [93, 499]
-    ]
-  },
-  {
-    id: 9,
-    name: "מעונות סטודנטים",
-    polygon: [
-      [218, 230],
-      [218, 324],
-      [268, 325],
-      [269, 227]
-    ]
-  }
+  { id: 1, name: "בניין 8", polygon: [[489, 1], [557, 0], [555, 32], [490, 31], [490, 15]] },
+  { id: 2, name: "בניין 7", polygon: [[243, 184], [223, 188], [223, 222], [242, 224]] },
+  { id: 3, name: "בניין 6", polygon: [[167, 248], [193, 207], [213, 207], [211, 266]] },
+  { id: 4, name: "בניין 5", polygon: [[110, 188], [105, 277], [128, 280], [127, 188]] },
+  { id: 5, name: "בניין 4", polygon: [[125, 360], [125, 393], [144, 393], [143, 361]] },
+  { id: 6, name: "בניין 3", polygon: [[50, 354], [52, 404], [85, 413], [91, 356]] },
+  { id: 7, name: "בניין 2", polygon: [[57, 426], [60, 468], [87, 469], [89, 426]] },
+  { id: 8, name: "בניין 1", polygon: [[66, 498], [69, 551], [93, 552], [93, 499]] },
+  { id: 9, name: "מעונות סטודנטים", polygon: [[218, 230], [218, 324], [268, 325], [269, 227]] }
 ];
-// פונקציה לבדיקת נקודה בתוך פוליגון (Ray Casting Algorithm)
+
+// Ray Casting Algorithm
 const pointInPolygon = (point, vs) => {
   const x = point[0], y = point[1];
-
   let inside = false;
   for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
     const xi = vs[i][0], yi = vs[i][1];
     const xj = vs[j][0], yj = vs[j][1];
-
-    const intersect = ((yi > y) !== (yj > y))
-      && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    const intersect = ((yi > y) !== (yj > y)) &&
+      (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
     if (intersect) inside = !inside;
   }
-
   return inside;
 };
 
@@ -122,19 +39,12 @@ const AddMarkerOnClick = ({ onAddClick, enableAdd }) => {
       if (!enableAdd) return;
 
       const point = [e.latlng.lat, e.latlng.lng];
+      const inside = buildings.some(building => pointInPolygon(point, building.polygon));
 
-      let insideAnyPolygon = false;
-      for (const building of buildings) {
-        if (pointInPolygon(point, building.polygon)) {
-          insideAnyPolygon = true;
-          break;
-        }
-      }
-
-      if (insideAnyPolygon) {
+      if (inside) {
         onAddClick(e.latlng);
       } else {
-        alert('הנקודה נמצאת מחוץ לכל פוליגון ולכן לא ניתן להוסיף מקלט כאן.');
+        alert('הנקודה מחוץ לפוליגון של בניין.');
       }
     }
   });
@@ -183,7 +93,7 @@ const Modal = ({ visible, onClose, onSave, markerData, setMarkerData }) => {
         <br />
 
         <label>
-          קיבולת (מספר אנשים):
+          קיבולת:
           <input type="number" name="capacity" value={markerData.capacity} onChange={handleChange} min="1" required />
         </label>
 
@@ -197,7 +107,7 @@ const Modal = ({ visible, onClose, onSave, markerData, setMarkerData }) => {
         <br />
 
         <label>
-          הערות (עד 200 מילים):
+          הערות:
           <textarea name="notes" value={markerData.notes} onChange={handleChange} maxLength={2000} rows={5} />
         </label>
 
@@ -210,7 +120,7 @@ const Modal = ({ visible, onClose, onSave, markerData, setMarkerData }) => {
   );
 };
 
-const MapView = ({ imageUrl }) => {
+const MapView = ({ imageUrl, area }) => {
   const [markers, setMarkers] = useState([]);
   const [enableAdd, setEnableAdd] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -221,7 +131,13 @@ const MapView = ({ imageUrl }) => {
     accessible: false,
     notes: '',
   });
-  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/shelters/area/${area}`)
+      .then((res) => setMarkers(res.data || []))
+      .catch(() => setMarkers([]));
+  }, [area]);
 
   const handleAddClick = (latlng) => {
     setCurrentLatLng(latlng);
@@ -231,40 +147,34 @@ const MapView = ({ imageUrl }) => {
       accessible: false,
       notes: '',
     });
-    setSelectedMarkerIndex(null);
     setModalVisible(true);
   };
 
   const handleSave = () => {
-    if (selectedMarkerIndex !== null) {
-      setMarkers((prev) => {
-        const copy = [...prev];
-        copy[selectedMarkerIndex] = { ...copy[selectedMarkerIndex], ...markerData };
-        return copy;
-      });
-    } else {
-      setMarkers((prev) => [...prev, { latlng: currentLatLng, ...markerData }]);
-    }
+    const newMarker = {
+      latlng: currentLatLng,
+      ...markerData,
+    };
 
+    setMarkers(prev => [...prev, newMarker]);
     setModalVisible(false);
-    setCurrentLatLng(null);
-  };
 
-  const handleMarkerClick = (index) => {
-    setSelectedMarkerIndex(index);
-    setMarkerData(markers[index]);
-    setCurrentLatLng(markers[index].latlng);
-    setModalVisible(true);
-  };
-
-  const toggleAddMode = () => {
-    setEnableAdd(!enableAdd);
+    axios.post("http://localhost:8080/shelters/add", {
+      name: "New Shelter",
+      capacity: markerData.capacity,
+      status: markerData.status,
+      accessibility: markerData.accessible ? "yes" : "no",
+      lat: currentLatLng.lat,
+      lng: currentLatLng.lng,
+      area_id: area,
+    }).then(res => console.log("Saved:", res.data))
+      .catch(err => console.error("Error:", err));
   };
 
   return (
     <div>
       <button
-        onClick={toggleAddMode}
+        onClick={() => setEnableAdd(!enableAdd)}
         style={{
           margin: '10px',
           padding: '8px 16px',
@@ -297,13 +207,7 @@ const MapView = ({ imageUrl }) => {
         <AddMarkerOnClick onAddClick={handleAddClick} enableAdd={enableAdd} />
 
         {markers.map((marker, i) => (
-          <Marker
-            key={i}
-            position={marker.latlng}
-            eventHandlers={{
-              click: () => handleMarkerClick(i),
-            }}
-          />
+          <Marker key={i} position={marker.latlng || { lat: marker.lat, lng: marker.lng }} />
         ))}
       </MapContainer>
 
@@ -319,3 +223,4 @@ const MapView = ({ imageUrl }) => {
 };
 
 export default MapView;
+

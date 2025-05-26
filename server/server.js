@@ -18,7 +18,7 @@ app.use(express.urlencoded());
 
 
 //routers
-app.use("/", shelters);
+app.use("/shelters", shelters);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
