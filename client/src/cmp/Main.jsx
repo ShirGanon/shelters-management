@@ -25,7 +25,7 @@ export default function Main() {
           </li>
         ))}
       </ul> */}
-       <MapView imageUrl="../HIT.png" />
+       <MapView imageUrl="../HIT1.png" />
     </div>
   )
 }

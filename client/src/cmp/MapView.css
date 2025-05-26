@@ -1,0 +1,34 @@
+.shelter-form {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  background: #fff;
+  padding: 20px;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  direction: rtl;
+}
+
+.shelter-form h3 {
+  margin-bottom: 10px;
+}
+
+.shelter-form label {
+  display: block;
+  margin-top: 10px;
+}
+
+.shelter-form input,
+.shelter-form select,
+.shelter-form textarea {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.shelter-form button {
+  margin-top: 15px;
+  margin-right: 10px;
+}

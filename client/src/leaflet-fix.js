@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+
 // Remove the default method Leaflet uses to get icon URLs
 delete L.Icon.Default.prototype._getIconUrl;
 
