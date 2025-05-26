@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 
 const imageBounds = [[0, 0], [1000, 1000]];
 
-// מערך כל הבניינים עם הקואורדינטות
 const buildings = [
   { id: 1, name: "בניין 8", polygon: [[489, 1], [557, 0], [555, 32], [490, 31], [490, 15]] },
   { id: 2, name: "בניין 7", polygon: [[243, 184], [223, 188], [223, 222], [242, 224]] },
@@ -19,7 +18,6 @@ const buildings = [
   { id: 9, name: "מעונות סטודנטים", polygon: [[218, 230], [218, 324], [268, 325], [269, 227]] }
 ];
 
-// Ray Casting Algorithm
 const pointInPolygon = (point, vs) => {
   const x = point[0], y = point[1];
   let inside = false;
@@ -37,10 +35,8 @@ const AddMarkerOnClick = ({ onAddClick, enableAdd }) => {
   useMapEvents({
     click(e) {
       if (!enableAdd) return;
-
       const point = [e.latlng.lat, e.latlng.lng];
       const inside = buildings.some(building => pointInPolygon(point, building.polygon));
-
       if (inside) {
         onAddClick(e.latlng);
       } else {
@@ -75,46 +71,78 @@ const Modal = ({ visible, onClose, onSave, markerData, setMarkerData }) => {
       zIndex: 1000,
     }}>
       <form onSubmit={handleSubmit} style={{
-        backgroundColor: 'white', padding: '20px', borderRadius: '8px',
-        width: '300px', maxHeight: '80vh', overflowY: 'auto'
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        width: '300px',
+        maxHeight: '80vh',
+        overflowY: 'auto',
+        direction: 'rtl',
+        fontFamily: 'inherit'
       }}>
-        <h3>פרטי מקלט</h3>
+        <h3 style={{ textAlign: 'center' }}>פרטי מקלט</h3>
 
-        <label>
-          סטטוס:
-          <select name="status" value={markerData.status} onChange={handleChange} required>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="status">סטטוס:</label><br />
+          <select
+            id="status"
+            name="status"
+            value={markerData.status}
+            onChange={handleChange}
+            required
+            style={{ width: '100%', padding: '6px' }}
+          >
             <option value="">בחר סטטוס</option>
             <option value="פתוח">פתוח</option>
             <option value="סגור">סגור</option>
             <option value="בשיפוץ">בשיפוץ</option>
           </select>
-        </label>
+        </div>
 
-        <br />
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="capacity">קיבולת:</label><br />
+          <input
+            id="capacity"
+            type="number"
+            name="capacity"
+            value={markerData.capacity}
+            onChange={handleChange}
+            min="1"
+            required
+            style={{ width: '100%', padding: '6px' }}
+          />
+        </div>
 
-        <label>
-          קיבולת:
-          <input type="number" name="capacity" value={markerData.capacity} onChange={handleChange} min="1" required />
-        </label>
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="accessible">
+            <input
+              type="checkbox"
+              name="accessible"
+              checked={markerData.accessible}
+              onChange={handleChange}
+              style={{ marginLeft: '5px' }}
+            />
+            נגיש
+          </label>
+        </div>
 
-        <br />
+        <div style={{ marginBottom: '10px' }}>
+          <label htmlFor="notes">הערות:</label><br />
+          <textarea
+            id="notes"
+            name="notes"
+            value={markerData.notes}
+            onChange={handleChange}
+            maxLength={2000}
+            rows={4}
+            style={{ width: '100%', padding: '6px' }}
+          />
+        </div>
 
-        <label>
-          נגיש:
-          <input type="checkbox" name="accessible" checked={markerData.accessible} onChange={handleChange} />
-        </label>
-
-        <br />
-
-        <label>
-          הערות:
-          <textarea name="notes" value={markerData.notes} onChange={handleChange} maxLength={2000} rows={5} />
-        </label>
-
-        <br />
-
-        <button type="submit" style={{ marginRight: '10px' }}>שמור</button>
-        <button type="button" onClick={onClose}>ביטול</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <button type="submit" style={{ padding: '8px 12px' }}>שמור</button>
+          <button type="button" onClick={onClose} style={{ padding: '8px 12px' }}>ביטול</button>
+        </div>
       </form>
     </div>
   );
@@ -223,4 +251,3 @@ const MapView = ({ imageUrl, area }) => {
 };
 
 export default MapView;
-
