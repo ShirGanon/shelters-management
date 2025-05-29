@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import axios from 'axios';
-import hitImage from '../../HIT.png';
-import { MdBugReport } from 'react-icons/md';
-import SideBar from './SideBar'; // הקומפוננטה החדשה בשם SideBar
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import axios from "axios";
+import { MdBugReport } from "react-icons/md";
+import SideBar from "./SideBar";
+import MapView from "./MapView";
 
 const Container = styled.div`
   padding: 20px;
@@ -64,7 +64,7 @@ const UploadButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
   width: 1300px;
   max-width: 100%;
@@ -83,12 +83,14 @@ const MainContent = styled.div`
 const ContentArea = styled.div`
   flex-grow: 1;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const AddButton = styled.button`
-  position: absolute;
-  top: 30px;
-  right: 30px;
+  align-self: flex-end;
+  margin-bottom: 10px;
   padding: 10px 16px;
   background-color: #007bff;
   color: white;
@@ -102,25 +104,37 @@ const AddButton = styled.button`
   }
 `;
 
-const StyledImage = styled.img`
-  width: 1300px;
-  max-width: 100%;
-  height: auto;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  display: block;
-  margin: 0 auto;
-  cursor: pointer;
+const CenteredMapWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  box-sizing: border-box;
+`;
+
+const MapResponsiveWrapper = styled.div`
+  width: 100%;
+  max-width: 500px; // reduced from 800px to 500px
+  aspect-ratio: 16 / 9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ShelterFinder = () => {
   const [selectedBuilding, setSelectedBuilding] = useState("Building A");
-  const [buildings, setBuildings] = useState(["Building A", "Building B", "Building C"]);
+  const [buildings, setBuildings] = useState([
+    "Building A",
+    "Building B",
+    "Building C",
+  ]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/shelters/list')
+    axios
+      .get("http://localhost:8080/shelters/list")
       .then((res) => {
-        // אם ה-API מחזיר רשימה, אפשר לעדכן את buildings כאן
+        // אם ה־API מחזיר רשימה, אפשר לעדכן את buildings כאן
       })
       .catch((err) => {
         console.error(err);
@@ -128,13 +142,7 @@ const ShelterFinder = () => {
   }, []);
 
   const handleAddShelter = () => {
-    alert('Add Shelter clicked!');
-    // פה אפשר להוסיף פונקציונליות אמיתית לפי הצורך
-  };
-
-  const handleImageClick = () => {
-    alert('Map clicked!');
-    // ניתן להוסיף התנהגות כמו זום, פיצ׳ר איתור וכו׳
+    alert("Add Shelter clicked!");
   };
 
   return (
@@ -161,13 +169,17 @@ const ShelterFinder = () => {
         />
 
         <ContentArea>
-          <AddButton onClick={handleAddShelter}>Add Shelter</AddButton>
-          <StyledImage
-            src={hitImage}
-            alt="HIT Campus Map"
-            onClick={handleImageClick}
-            title="Click to interact with the map"
-          />
+          <AddButton onClick={handleAddShelter}>הפעל הוספת מקלטים</AddButton>
+
+          <CenteredMapWrapper>
+            <MapResponsiveWrapper>
+              <MapView
+                imageUrl="../HIT1.png"
+                area="1"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
+            </MapResponsiveWrapper>
+          </CenteredMapWrapper>
         </ContentArea>
       </MainContent>
     </Container>
