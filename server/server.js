@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import shelters from "./routes/shelters.js";
+import areas from "./routes/areas.js";
 
 import {accessOriginController} from "./middlewares/accessOriginController.js";
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded());
 
 //routers
 app.use("/shelters", shelters);
+app.use("/areas", areas);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

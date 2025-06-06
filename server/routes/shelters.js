@@ -11,12 +11,6 @@ const validateParams = (requiredFields) => (req, res, next) => {
     next();
 };
 
-const shelters = [
-    { id: 1, name: "Shelter A", location: "Location A" },
-    { id: 2, name: "Shelter B", location: "Location B" },
-    { id: 3, name: "Shelter C", location: "Location C" }
-]
-
 
 router.get("/", (req, res) => {
     res.send("Welcome to the shelters API");
