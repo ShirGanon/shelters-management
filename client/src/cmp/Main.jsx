@@ -17,15 +17,7 @@ export default function Main() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
       <h1>Welcome to the shelters API</h1>
-      <h2>List of shelters</h2>
-      {/* <ul>
-        {shelters.map((shelter) => (
-          <li key={shelter.id}>
-            {shelter.name} - {shelter.location}
-          </li>
-        ))}
-      </ul> */}
-       <MapView imageUrl="../HITMAP.png" />
+       <MapView imageUrl="../Holon.png" />
     </div>
   )
 }
