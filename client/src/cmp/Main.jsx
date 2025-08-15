@@ -17,7 +17,8 @@ export default function Main() {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
       <h1>Welcome to the shelters API</h1>
-       <MapView imageUrl="../Holon.png" />
+      <h2>List of shelters</h2>
+       <MapView imageUrl="../Holon.png" area='1' />
     </div>
   )
 }
