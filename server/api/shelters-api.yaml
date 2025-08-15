@@ -1,0 +1,249 @@
+openapi: 3.0.0
+info:
+  title: Shelters Management API
+  version: 1.0.0
+  description: API for managing shelters and areas in the campus
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /areas/list:
+    get:
+      summary: Get all areas
+      parameters:
+        - in: query
+          name: img
+          schema:
+            type: boolean
+            default: false
+          description: Include image data
+      responses:
+        '200':
+          description: List of areas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Area'
+
+  /areas/details/{id}:
+    get:
+      summary: Get area details by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: img
+          schema:
+            type: boolean
+            default: false
+          description: Include image data
+      responses:
+        '200':
+          description: Area details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Area'
+        '404':
+          description: Area not found
+
+  /areas/upload:
+    post:
+      summary: Upload a new area
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                description:
+                  type: string
+              required:
+                - image
+                - name
+                - description
+      responses:
+        '201':
+          description: Area added
+        '400':
+          description: Missing required fields
+
+  /areas/delete/{id}:
+    delete:
+      summary: Delete area by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Area deleted
+        '404':
+          description: Area not found
+
+  /shelters/list:
+    get:
+      summary: Get all shelters
+      responses:
+        '200':
+          description: List of shelters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shelter'
+
+  /shelters/details/{id}:
+    get:
+      summary: Get shelter details by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Shelter details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelter'
+        '404':
+          description: Shelter not found
+
+  /shelters/area/{areaId}:
+    get:
+      summary: Get shelters by area ID
+      parameters:
+        - in: path
+          name: areaId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of shelters in area
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shelter'
+
+  /shelters/add:
+    post:
+      summary: Create new shelter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShelterInput'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShelterInput'
+      responses:
+        '201':
+          description: Shelter added
+        '400':
+          description: Missing required fields
+
+  /shelters/delete/{id}:
+    delete:
+      summary: Delete shelter by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Shelter deleted
+        '404':
+          description: Shelter not found
+
+components:
+  schemas:
+    Area:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        img:
+          type: string
+          format: binary
+        created_at:
+          type: string
+          format: date-time
+
+    Shelter:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+        status:
+          type: string
+        accessibility:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        area_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    ShelterInput:
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+        status:
+          type: string
+        accessibility:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        area_id:
+          type: integer
+      required:
+        - name
+        - capacity
+        - status
+        - accessibility
+        - lat
+        - lng
+        - area_id

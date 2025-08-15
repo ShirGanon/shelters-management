@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import { getAllShelters, getSheltersByAreaId, addShelter } from '../models/sheltersModel.js';
+import { getAllShelters, getShelterById, getSheltersByAreaId, addShelter, deleteShelter } from '../models/sheltersModel.js';
 
 // Middleware to validate required fields in the request body
 const validateParams = (requiredFields) => (req, res, next) => {
@@ -26,7 +26,7 @@ router.get("/list", async (req, res) => {
 router.get("/area/:areaId", async (req, res) => {
     const { areaId } = req.params;
     if (!areaId) {
-        return res.status(400).send("Area ID is required");
+        return res.status(400).send("Area ID is required (areaId)");
     }
     await getSheltersByAreaId(areaId).then((shelters) => {
         res.json(shelters);
@@ -35,9 +35,17 @@ router.get("/area/:areaId", async (req, res) => {
         res.status(500).send("Error fetching shelters for area");
     });
 })
-router.get("/details/:id", (req, res) => {
+router.get("/details/:id", async (req, res) => {
     const { id } = req.params;
-    res.send(`Details of shelter with id: ${id}`);
+    if (!id) {
+        return res.status(400).send("Shelter ID is required (id)");
+    }
+    await getShelterById(id).then((shelter) => {
+        if (!shelter) {
+            return res.status(404).send("Shelter not found");
+        }
+        res.send(shelter);
+    });
 })
 router.post("/add", validateParams(["name", "capacity", "status", "accessibility", "lat", "lng", "area_id"]), async(req, res) => {
     const { name, capacity, status, accessibility, lat, lng, area_id } = req.body;
@@ -49,15 +57,24 @@ router.post("/add", validateParams(["name", "capacity", "status", "accessibility
         res.status(500).send("Error adding shelter");
     });
 });
-router.put("/update/:id", validateParams(["name", "location"]), (req, res) => {
-    const { id } = req.params;
-    const { name, location } = req.body;
-    res.send(`Shelter with id ${id} updated to name ${name} and location ${location}`);
-})
-router.delete("/delete/:id", (req, res) => {
-    const { id } = req.params;
-    res.send(`Shelter with id ${id} deleted`);
-})
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).send("Shelter ID is required (id)");
+  }
+  await deleteShelter(id)
+    .then((success) => {
+      if (success) {
+        res.send(`Shelter with ID ${id} deleted`);
+      } else {
+        res.status(404).send("Shelter not found");
+      }
+    })
+    .catch((err) => {
+      console.error("Error deleting shelter:", err);
+      res.status(500).send("Error deleting shelter: " + err.message);
+    });
+});
 
 
 export default router;
