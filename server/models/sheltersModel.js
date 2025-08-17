@@ -33,6 +33,18 @@ export const addShelter = async (shelter) =>
     return result.insertId;
 }
 
+export const deleteShelter = async (id) =>
+{
+    try{
+        const [result] = await db.query('DELETE FROM shelters WHERE id = ?', [id]);
+        return result.affectedRows > 0;
+    } catch (error) {
+        const message = error.sqlMessage || 'Failed to delete shelter';
+        const sqlState = error.sqlState || 'UNKNOWN';
+        throw new Error(`${message} (SQLSTATE: ${sqlState})`);
+    }
+}
+
 // console.log(await getAllShelters())
 // console.log(await getShelterById(2))
 // console.log(await getShelterByName('shelter2'))

@@ -5,6 +5,10 @@ import path from "path";
 const router = express.Router();
 import { getAllAreas, getAreaById, addArea, deleteArea } from "../models/areasModel.js";
 
+// Ensure uploads directory exists (async, before multer setup)
+const uploadsDir = path.join(process.cwd(), "uploads");
+fs.mkdir(uploadsDir, { recursive: true }).catch(console.error);
+
 // Middleware to validate required fields in the request body
 const validateParams = (requiredFields) => (req, res, next) => {
   const missingFields = requiredFields.filter((field) => !req.body[field]);
@@ -90,7 +94,7 @@ router.post("/upload", upload.single("image"), validateParams(["name", "descript
           res.status(201).send(`Area added with ID: ${areaId}`);
         })
         .catch((err) => {
-          console.error("Error adding area:", err);
+          console.log("Error adding area:", err.message);
           res.status(500).send("Error adding area: " + err.message);
         });
 
@@ -100,7 +104,7 @@ router.post("/upload", upload.single("image"), validateParams(["name", "descript
       });
     } catch (err) {
       console.error("Upload error:", err);
-      res.status(500).send("Upload failed");
+      res.status(500).send("Upload failed: " + err.message);
     }
   }
 );
