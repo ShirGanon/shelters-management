@@ -267,13 +267,13 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick }) => {
       }}
     >
       <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>Shelter List</h3>
-      {markers.length === 0 ? (
+      {Array.isArray(markers) && markers.length === 0 ? (
         <p style={{ color: '#555', fontSize: '0.9rem' }}>No shelters added yet.</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-          {markers.map((marker, index) => (
+          {(Array.isArray(markers) ? markers : []).map((marker, index) => (
             <li
-              key={marker.areaId}
+              key={marker.areaId || `marker-${index}`}
               style={{
                 padding: '10px',
                 borderBottom: '1px solid #eee',
@@ -281,7 +281,7 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick }) => {
                 fontSize: '0.95rem',
               }}
             >
-              <strong>{marker.name || `Area ${marker.areaId}`}</strong>
+              <strong>{marker.name || `Area ${marker.areaId || index + 1}`}</strong>
               <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
                 {marker.description || 'No description'}
               </p>
@@ -333,7 +333,7 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
     setShelterData(prev => ({
       ...prev,
       [name]: value,
-      imageUrl: areaImageUrl, // Set the area image URL for the shelter
+      imageUrl: areaImageUrl,
     }));
   };
 
@@ -512,8 +512,7 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addMode, onAdd
   const [shelterList, setShelterList] = useState([]);
 
   useEffect(() => {
-    // Filter shelters for the current area based on imageUrl
-    const areaShelters = markers.filter(marker => marker.imageUrl === imageUrl);
+    const areaShelters = Array.isArray(markers) ? markers.filter(marker => marker.imageUrl === imageUrl) : [];
     setShelterList(areaShelters);
   }, [markers, imageUrl]);
 
@@ -537,21 +536,23 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addMode, onAdd
           cursor: addMode ? 'crosshair' : 'default',
         }}
       />
-      {markers.map((marker) => (
-        <div
-          key={marker.areaId}
-          style={{
-            position: 'absolute',
-            top: `${(marker.latlng.lat / 1000) * 100}%`,
-            left: `${(marker.latlng.lng / 1000) * 100}%`,
-            width: '10px',
-            height: '10px',
-            backgroundColor: 'red',
-            borderRadius: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1002,
-          }}
-        />
+      {Array.isArray(markers) && markers.map((marker, index) => (
+        marker.latlng && (
+          <div
+            key={marker.areaId || `marker-${index}`}
+            style={{
+              position: 'absolute',
+              top: `${(marker.latlng.lat / 1000) * 100}%`,
+              left: `${(marker.latlng.lng / 1000) * 100}%`,
+              width: '10px',
+              height: '10px',
+              backgroundColor: 'red',
+              borderRadius: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 1002,
+            }}
+          />
+        )
       ))}
       <button
         onClick={onAddShelterClick}
@@ -594,7 +595,7 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addMode, onAdd
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {shelterList.map((shelter, index) => (
               <li
-                key={shelter.areaId}
+                key={shelter.areaId || `shelter-${index}`}
                 style={{
                   padding: '10px',
                   borderBottom: '1px solid #eee',
@@ -602,7 +603,7 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addMode, onAdd
                   fontSize: '0.95rem',
                 }}
               >
-                <strong>{shelter.name || `Shelter ${shelter.areaId}`}</strong>
+                <strong>{shelter.name || `Shelter ${shelter.areaId || index + 1}`}</strong>
                 <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
                   {shelter.description || 'No description'}
                 </p>
@@ -641,22 +642,31 @@ const MapView = ({ imageUrl }) => {
     status: '',
     accessibility: '',
     description: '',
+    imageUrl: '',
   });
   const mapRef = useRef();
 
   useEffect(() => {
     axios.get("http://localhost:8080/areas")
       .then(res => {
-        setMarkers(res.data);
-        setAreaCounter(res.data.length + 1);
+        const data = Array.isArray(res.data) ? res.data.map((item, index) => ({
+          ...item,
+          areaId: item.areaId || `area-${index + 1}`,
+          latlng: item.latlng || { lat: 500, lng: 500 },
+        })) : [];
+        setMarkers(data);
+        setAreaCounter(data.length + 1);
       })
-      .catch(err => console.error("Failed to fetch areas:", err));
+      .catch(err => {
+        console.error("Failed to fetch areas:", err);
+        setMarkers([]);
+      });
   }, []);
 
   const handleAddClick = (latlng) => {
     setCurrentLatLng(latlng);
     setAreaData({
-      areaId: areaCounter.toString(),
+      areaId: `area-${areaCounter}`,
       name: '',
       description: '',
       image: null,
@@ -668,11 +678,11 @@ const MapView = ({ imageUrl }) => {
   };
 
   const handleMarkerClick = (marker, index) => {
-    setCurrentLatLng(marker.latlng);
+    setCurrentLatLng(marker.latlng || { lat: 500, lng: 500 });
     setAreaData({
       areaId: marker.areaId,
-      name: marker.name,
-      description: marker.description,
+      name: marker.name || '',
+      description: marker.description || '',
       image: null,
       imageUrl: marker.imageUrl || null,
     });
@@ -686,7 +696,7 @@ const MapView = ({ imageUrl }) => {
       const updatedMarkers = [...markers];
       updatedMarkers[editIndex] = {
         ...updatedMarkers[editIndex],
-        latlng: currentLatLng,
+        latlng: currentLatLng || { lat: 500, lng: 500 },
         ...areaData,
       };
       setMarkers(updatedMarkers);
@@ -699,8 +709,8 @@ const MapView = ({ imageUrl }) => {
       if (areaData.image) {
         formData.append('image', areaData.image);
       }
-      formData.append('lat', currentLatLng.lat);
-      formData.append('lng', currentLatLng.lng);
+      formData.append('lat', currentLatLng?.lat || 500);
+      formData.append('lng', currentLatLng?.lng || 500);
 
       axios.put(`http://localhost:8080/areas/${areaData.areaId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -709,7 +719,7 @@ const MapView = ({ imageUrl }) => {
         .catch(err => console.error("Error updating area:", err));
     } else {
       const newMarker = {
-        latlng: currentLatLng,
+        latlng: currentLatLng || { lat: 500, lng: 500 },
         ...areaData,
       };
       setMarkers(prev => [...prev, newMarker]);
@@ -723,8 +733,8 @@ const MapView = ({ imageUrl }) => {
       if (areaData.image) {
         formData.append('image', areaData.image);
       }
-      formData.append('lat', currentLatLng.lat);
-      formData.append('lng', currentLatLng.lng);
+      formData.append('lat', currentLatLng?.lat || 500);
+      formData.append('lng', currentLatLng?.lng || 500);
 
       axios.post("http://localhost:8080/areas", formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -791,12 +801,13 @@ const MapView = ({ imageUrl }) => {
       setPopupVisible(true);
       setShelterData({
         areaNumber: '',
-        areaId: areaCounter.toString(),
+        areaId: `shelter-${areaCounter}`,
         name: '',
         floor: '',
         status: '',
         accessibility: '',
         description: '',
+        imageUrl: selectedImageUrl,
       });
     }
   };
@@ -805,7 +816,7 @@ const MapView = ({ imageUrl }) => {
     setPopupVisible(true);
     setShelterData({
       areaNumber: '',
-      areaId: areaCounter.toString(),
+      areaId: `shelter-${areaCounter}`,
       name: '',
       floor: '',
       status: '',
@@ -818,12 +829,13 @@ const MapView = ({ imageUrl }) => {
 
   const handleSaveShelter = () => {
     const newMarker = {
-      latlng: currentLatLng || { lat: 500, lng: 500 }, // Default position if not set
+      latlng: currentLatLng || { lat: 500, lng: 500 },
       ...shelterData,
     };
     setMarkers(prev => [...prev, newMarker]);
     setPopupVisible(false);
     setAddMode(false);
+    setAreaCounter(prev => prev + 1);
 
     const formData = new FormData();
     formData.append('areaNumber', shelterData.areaNumber);
@@ -835,7 +847,7 @@ const MapView = ({ imageUrl }) => {
     formData.append('description', shelterData.description);
     formData.append('lat', newMarker.latlng.lat);
     formData.append('lng', newMarker.latlng.lng);
-    formData.append('imageUrl', shelterData.imageUrl);
+    formData.append('imageUrl', shelterData.imageUrl || '');
 
     axios.post("http://localhost:8080/areas", formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -892,31 +904,33 @@ const MapView = ({ imageUrl }) => {
 
           <AddMarkerOnClick onAddClick={handleAddClick} active={addMode} />
 
-          {markers.map((marker, index) => (
-            <Marker
-              key={marker.areaId}
-              position={marker.latlng}
-              icon={defaultIcon}
-              draggable={true}
-              eventHandlers={{
-                dragend: (e) => handleMarkerDragEnd(e, index),
-                click: () => handleMarkerClick(marker, index),
-              }}
-            >
-              <Popup>
-                <div style={{ maxWidth: 200 }}>
-                  <h4 style={{ marginBottom: 6 }}>{marker.name || `Area ${marker.areaId}`}</h4>
-                  <p style={{ marginBottom: 6, fontSize: '0.9rem' }}>{marker.description || 'No description'}</p>
-                  {marker.imageUrl && (
-                    <img
-                      src={marker.imageUrl}
-                      alt={`Area ${marker.areaId}`}
-                      style={{ width: '100%', borderRadius: '6px', marginTop: 6 }}
-                    />
-                  )}
-                </div>
-              </Popup>
-            </Marker>
+          {Array.isArray(markers) && markers.map((marker, index) => (
+            marker.latlng && (
+              <Marker
+                key={marker.areaId || `marker-${index}`}
+                position={marker.latlng}
+                icon={defaultIcon}
+                draggable={true}
+                eventHandlers={{
+                  dragend: (e) => handleMarkerDragEnd(e, index),
+                  click: () => handleMarkerClick(marker, index),
+                }}
+              >
+                <Popup>
+                  <div style={{ maxWidth: 200 }}>
+                    <h4 style={{ marginBottom: 6 }}>{marker.name || `Area ${marker.areaId || index + 1}`}</h4>
+                    <p style={{ marginBottom: 6, fontSize: '0.9rem' }}>{marker.description || 'No description'}</p>
+                    {marker.imageUrl && (
+                      <img
+                        src={marker.imageUrl}
+                        alt={`Area ${marker.areaId || index + 1}`}
+                        style={{ width: '100%', borderRadius: '6px', marginTop: 6 }}
+                      />
+                    )}
+                  </div>
+                </Popup>
+              </Marker>
+            )
           ))}
         </MapContainer>
       ) : (
