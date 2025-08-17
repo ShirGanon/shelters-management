@@ -16,7 +16,7 @@ export default function Main() {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
-      <h1>Welcome to the shelters API</h1>
+      {/* <h1>Welcome to the shelters API</h1> */}
        <MapView imageUrl="../Holon.png" />
     </div>
   )
