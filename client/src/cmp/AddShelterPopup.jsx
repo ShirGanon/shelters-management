@@ -1,0 +1,135 @@
+const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setShelterData, areaId, areaImageUrl }) => {
+  if (!visible) return null;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setShelterData(prev => ({
+      ...prev,
+      [name]: value,
+      areaId,
+      imageUrl: areaImageUrl,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave();
+  };
+
+  return (
+    <div className="shelter-form" style={{ top: position.y, left: position.x, transform: 'translate(-50%, -50%)' }}>
+      <form onSubmit={handleSubmit}>
+        <h3>Add New Shelter</h3>
+        <label>
+          Area ID:
+          <input
+            type="text"
+            name="areaId"
+            value={shelterData.areaId}
+            readOnly
+            disabled
+          />
+        </label>
+        <label>
+          Shelter Name:
+          <input
+            type="text"
+            name="name"
+            value={shelterData.name}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Shelter ID:
+          <input
+            type="text"
+            name="shelterId"
+            value={shelterData.shelterId}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Floor:
+          <input
+            type="text"
+            name="floor"
+            value={shelterData.floor}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Status:
+          <input
+            type="text"
+            name="status"
+            value={shelterData.status}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Accessibility:
+          <input
+            type="text"
+            name="accessibility"
+            value={shelterData.accessibility}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Capacity:
+          <input
+            type="text"
+            name="capacity"
+            value={shelterData.capacity}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Description:
+          <textarea
+            name="description"
+            value={shelterData.description}
+            onChange={handleChange}
+            rows={2}
+          />
+        </label>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="submit"
+            style={{
+              backgroundColor: '#4a90e2',
+              color: 'white',
+              padding: '8px 18px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              boxShadow: '0 2px 6px rgba(74,144,226,0.5)',
+            }}
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '6px',
+              border: '1.5px solid #aaa',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+              color: '#333',
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default AddShelterPopup;
