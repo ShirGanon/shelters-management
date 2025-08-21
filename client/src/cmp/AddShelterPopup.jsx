@@ -1,3 +1,5 @@
+import React from 'react';
+
 const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setShelterData, areaId, areaImageUrl, isEdit = false }) => {
   if (!visible) return null;
 
@@ -5,7 +7,7 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
     const { name, value } = e.target;
     setShelterData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'floor' || name === 'capacity' ? (value === '' ? '' : Number(value)) : value,
       areaId,
       imageUrl: areaImageUrl,
     }));
@@ -14,7 +16,6 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Additional validation for required fields
     if (!shelterData.name || !shelterData.status || !shelterData.capacity) {
       alert('Please fill in all required fields: Shelter Name, Status, and Capacity.');
       return;
@@ -108,7 +109,7 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Floor:</span>
           <input
-            type="text"
+            type="number"
             name="floor"
             value={shelterData.floor || ''}
             onChange={handleChange}
