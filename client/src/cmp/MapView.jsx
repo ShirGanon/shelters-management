@@ -9,7 +9,6 @@ import ShelterList from './ShelterList.jsx';
 import ImageViewWithShelters from './ImageViewWithShelters.jsx';
 import MarkersLayer from './MarkersLayer.jsx';
 
-
 const imageBounds = [[0, 0], [1000, 1000]];
 
 const MapView = ({ imageUrl }) => {
@@ -42,7 +41,9 @@ const MapView = ({ imageUrl }) => {
     capacity: '',
     description: '',
     imageUrl: '',
+    latlng: null,
   });
+  const [editShelterIndex, setEditShelterIndex] = useState(null);
   const mapRef = useRef();
 
   useEffect(() => {
@@ -186,6 +187,7 @@ const MapView = ({ imageUrl }) => {
     setSelectedImageUrl(null);
     setAddShelterMode(false);
     setPopupVisible(false);
+    setEditShelterIndex(null);
   };
 
   const handleImageClick = (e) => {
@@ -208,7 +210,9 @@ const MapView = ({ imageUrl }) => {
         capacity: '',
         description: '',
         imageUrl: selectedImageUrl,
+        latlng: { lat, lng },
       });
+      setEditShelterIndex(null);
     }
   };
 
@@ -216,36 +220,91 @@ const MapView = ({ imageUrl }) => {
     setAddShelterMode(prev => !prev);
     if (popupVisible) {
       setPopupVisible(false);
+      setEditShelterIndex(null);
     }
   };
 
+  const handleEditShelter = (shelter) => {
+    const shelterIndex = markers.findIndex(m => m.shelterId === shelter.shelterId);
+    setEditShelterIndex(shelterIndex);
+    
+    setShelterData({
+      areaId: shelter.areaId,
+      shelterId: shelter.shelterId,
+      name: shelter.name || '',
+      floor: shelter.floor || '',
+      status: shelter.status || '',
+      accessibility: shelter.accessibility || '',
+      capacity: shelter.capacity || '',
+      description: shelter.description || '',
+      imageUrl: shelter.imageUrl || selectedImageUrl,
+      latlng: shelter.latlng
+    });
+
+    setPopupPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    });
+    setPopupVisible(true);
+  };
+
   const handleSaveShelter = () => {
-    const newMarker = {
-      latlng: currentLatLng || { lat: 500, lng: 500 },
-      shelterId: shelterData.shelterId,
-      ...shelterData,
-    };
-    setMarkers(prev => [...prev, newMarker]);
-    setPopupVisible(false);
-    setAddShelterMode(false);
-    setAreaCounter(prev => prev + 1);
+    if (editShelterIndex !== null) {
+      const updatedMarkers = [...markers];
+      updatedMarkers[editShelterIndex] = {
+        ...updatedMarkers[editShelterIndex],
+        ...shelterData,
+      };
+      setMarkers(updatedMarkers);
+      setPopupVisible(false);
+      setEditShelterIndex(null);
+      setAddShelterMode(false);
 
-    const formData = new URLSearchParams();
-    formData.append('area_id', shelterData.areaId);
-    formData.append('name', shelterData.name);
-    formData.append('floor', shelterData.floor);
-    formData.append('status', shelterData.status);
-    formData.append('accessibility', shelterData.accessibility);
-    formData.append('capacity', shelterData.capacity);
-    formData.append('description', shelterData.description);
-    formData.append('lat', newMarker.latlng.lat);
-    formData.append('lng', newMarker.latlng.lng);
+      const formData = new URLSearchParams();
+      formData.append('shelter_id', shelterData.shelterId);
+      formData.append('area_id', shelterData.areaId);
+      formData.append('name', shelterData.name);
+      formData.append('floor', shelterData.floor);
+      formData.append('status', shelterData.status);
+      formData.append('accessibility', shelterData.accessibility);
+      formData.append('capacity', shelterData.capacity);
+      formData.append('description', shelterData.description);
+      formData.append('lat', shelterData.latlng?.lat || 500);
+      formData.append('lng', shelterData.latlng?.lng || 500);
 
-    axios.post("http://localhost:8080/shelters/add", formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    })
-      .then(res => console.log("Saved shelter:", res.data))
-      .catch(err => console.error("Error saving shelter:", err));
+      axios.put(`http://localhost:8080/shelters/update/${shelterData.shelterId}`, formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+        .then(res => console.log("Updated shelter:", res.data))
+        .catch(err => console.error("Error updating shelter:", err));
+    } else {
+      const newMarker = {
+        latlng: currentLatLng || { lat: 500, lng: 500 },
+        shelterId: shelterData.shelterId,
+        ...shelterData,
+      };
+      setMarkers(prev => [...prev, newMarker]);
+      setPopupVisible(false);
+      setAddShelterMode(false);
+      setAreaCounter(prev => prev + 1);
+
+      const formData = new URLSearchParams();
+      formData.append('area_id', shelterData.areaId);
+      formData.append('name', shelterData.name);
+      formData.append('floor', shelterData.floor);
+      formData.append('status', shelterData.status);
+      formData.append('accessibility', shelterData.accessibility);
+      formData.append('capacity', shelterData.capacity);
+      formData.append('description', shelterData.description);
+      formData.append('lat', newMarker.latlng.lat);
+      formData.append('lng', newMarker.latlng.lng);
+
+      axios.post("http://localhost:8080/shelters/add", formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+        .then(res => console.log("Saved shelter:", res.data))
+        .catch(err => console.error("Error saving shelter:", err));
+    }
   };
 
   return (
@@ -263,33 +322,32 @@ const MapView = ({ imageUrl }) => {
 
       {!showImageView ? (
         <div className="map-container">
-         <button
-          onClick={() => setAddMode(!addMode)}
-          className={`add-area-button ${addMode ? 'active' : ''}`}
+          <button
+            onClick={() => setAddMode(!addMode)}
+            className={`add-area-button ${addMode ? 'active' : ''}`}
           >
-          {addMode ? 'Cancel Add Mode' : 'Add New Area'}
-        </button>
+            {addMode ? 'Cancel Add Mode' : 'Add New Area'}
+          </button>
 
-        <MarkersLayer
-          imageUrl={imageUrl}
-          markers={markers}
-          defaultIcon={defaultIcon}
-          handleMarkerClick={handleMarkerClick}
-          handleMarkerDragEnd={handleMarkerDragEnd}
-          handleAddClick={handleAddClick}
-          addMode={addMode}
-          imageBounds={imageBounds}
-          mapRef={mapRef}
-        />
-      </div>
-
+          <MarkersLayer
+            imageUrl={imageUrl}
+            markers={markers}
+            defaultIcon={defaultIcon}
+            handleMarkerClick={handleMarkerClick}
+            handleMarkerDragEnd={handleMarkerDragEnd}
+            handleAddClick={handleAddClick}
+            addMode={addMode}
+            imageBounds={imageBounds}
+            mapRef={mapRef}
+          />
+        </div>
       ) : (
         <div style={{ position: 'relative' }}>
           <button
             onClick={handleBack}
             style={{
               position: 'absolute',
-              top: '-50px', // Moved up above the image container
+              top: '-50px',
               left: '10px',
               backgroundColor: '#d9534f',
               color: 'white',
@@ -299,7 +357,7 @@ const MapView = ({ imageUrl }) => {
               cursor: 'pointer',
               fontWeight: '600',
               boxShadow: '0 2px 6px rgba(217,83,79,0.5)',
-              zIndex: 1004, // Higher z-index to ensure it's visible
+              zIndex: 1004,
             }}
           >
             Back
@@ -311,17 +369,22 @@ const MapView = ({ imageUrl }) => {
             addShelterMode={addShelterMode}
             onAddShelterClick={handleAddShelterClick}
             areaId={selectedAreaId}
+            onEditShelter={handleEditShelter}
           />
           {popupVisible && (
             <AddShelterPopup
               visible={popupVisible}
               position={popupPosition}
-              onClose={() => setPopupVisible(false)}
+              onClose={() => {
+                setPopupVisible(false);
+                setEditShelterIndex(null);
+              }}
               onSave={handleSaveShelter}
               shelterData={shelterData}
               setShelterData={setShelterData}
               areaId={selectedAreaId}
               areaImageUrl={selectedImageUrl}
+              isEdit={editShelterIndex !== null}
             />
           )}
         </div>
@@ -329,7 +392,11 @@ const MapView = ({ imageUrl }) => {
 
       <Modal
         visible={modalVisible}
-        onClose={() => { setModalVisible(false); setEditIndex(null); setAddMode(false); }}
+        onClose={() => {
+          setModalVisible(false);
+          setEditIndex(null);
+          setAddMode(false);
+        }}
         onSave={handleSave}
         onDelete={handleDelete}
         areaData={areaData}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode, onAddShelterClick, areaId }) => {
+const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode, onAddShelterClick, areaId, onEditShelter }) => {
   const [shelterList, setShelterList] = useState([]);
 
   useEffect(() => {
@@ -16,9 +16,60 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
     }
   };
 
+  const handleShelterClick = (shelter, e) => {
+    e.stopPropagation();
+    if (!addShelterMode && onEditShelter) {
+      onEditShelter(shelter);
+    }
+  };
+
+  // Shelter Icon Component
+  const ShelterIcon = ({ size = 32, color = '#dc3545' }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
+    >
+      <path d="M12 2L2 9h3v11h6v-6h2v6h6V9h3L12 2zm0 2.84L18 9v9h-2v-6h-6v6H8V9l4-4.16z"/>
+    </svg>
+  );
+
+  // Alternative Shelter Building Icon
+  const ShelterBuildingIcon = ({ size = 20, color = '#2c5282' }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+    >
+      <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.69L18 12v6h-2v-6h-6v6H8v-6l4-6.31z"/>
+      <circle cx="12" cy="9" r="1"/>
+    </svg>
+  );
+
+  // Emergency Shelter Icon (with person)
+  const EmergencyShelterIcon = ({ size = 20, color = '#2c5282' }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+    >
+      <path d="M12 1L1 8v2h2v11h18V10h2V8L12 1zm0 2.5L19.5 9H4.5L12 3.5zM5 11h14v7H5v-7z"/>
+      <circle cx="8" cy="13" r="1"/>
+      <path d="M7 15h2v2H7z"/>
+      <circle cx="16" cy="13" r="1"/>
+      <path d="M15 15h2v2h-2z"/>
+    </svg>
+  );
+
   return (
     <>
-      {/* Shelters List מחוץ למפה, צמוד לפינה שמאלית עליונה */}
+      {/* Shelters List */}
       <div
         style={{
           position: 'fixed',
@@ -48,12 +99,43 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
                   borderBottom: '1px solid #eee',
                   color: '#333',
                   fontSize: '0.95rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
                 }}
               >
-                <strong>{shelter.name || `Shelter ${shelter.shelterId || index + 1}`}</strong>
-                <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
-                  {shelter.description || 'No description'}
-                </p>
+                <ShelterIcon size={18} color="#dc3545" />
+                <div>
+                  <strong>{shelter.name || `Shelter ${shelter.shelterId || index + 1}`}</strong>
+                  <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
+                    {shelter.description || 'No description'}
+                  </p>
+                  {shelter.status && (
+                    <span style={{ 
+                      fontSize: '0.8rem', 
+                      color: shelter.status === 'Available' ? '#28a745' : 
+                             shelter.status === 'Fully Occupied' ? '#dc3545' : '#ffc107',
+                      fontWeight: '600'
+                    }}>
+                      {shelter.status}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => onEditShelter && onEditShelter(shelter)}
+                    style={{
+                      marginTop: '5px',
+                      padding: '4px 8px',
+                      fontSize: '0.75rem',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '3px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Edit
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -64,7 +146,7 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
       <div
         style={{
           position: 'relative',
-          top:'-160px',
+          top: '-160px',
           height: '600px',
           width: '100%',
           borderRadius: '8px',
@@ -95,14 +177,26 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
                   position: 'absolute',
                   top: `${(marker.latlng.lat / 1000) * 100}%`,
                   left: `${(marker.latlng.lng / 1000) * 100}%`,
-                  width: '10px',
-                  height: '10px',
-                  backgroundColor: 'red',
-                  borderRadius: '50%',
                   transform: 'translate(-50%, -50%)',
                   zIndex: 1002,
+                  cursor: addShelterMode ? 'default' : 'pointer',
+                  transition: 'transform 0.2s ease',
                 }}
-              />
+                title={addShelterMode ? '' : `Click to edit: ${marker.name || 'Shelter'} - ${marker.status || 'Unknown status'}`}
+                onClick={(e) => handleShelterClick(marker, e)}
+                onMouseEnter={(e) => {
+                  if (!addShelterMode) {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!addShelterMode) {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                  }
+                }}
+              >
+                <ShelterIcon size={36} color="#dc3545" />
+              </div>
             )
           ))
         }
