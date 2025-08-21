@@ -129,11 +129,11 @@ const MapView = ({ imageUrl }) => {
       formData.append('areaId', areaData.areaId);
       formData.append('name', areaData.name);
       formData.append('description', areaData.description);
-      const imgFile = new File(["hello"], "example.png", { type: "image/png" });
+      // const imgFile = new File(["hello"], "example.png", { type: "image/png" });
       formData.append('image', imgFile);
-      // if (areaData.image) {
-      //   formData.append('image', areaData.image);
-      // }
+      if (areaData.image) {
+        formData.append('image', areaData.image);
+      }
       formData.append('lat', currentLatLng?.lat || 500);
       formData.append('lng', currentLatLng?.lng || 500);
 

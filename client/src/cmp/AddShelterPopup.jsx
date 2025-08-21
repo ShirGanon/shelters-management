@@ -61,12 +61,24 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         </label>
         <label>
           Status:
-          <input
-            type="text"
+          <select
             name="status"
-            value={shelterData.status}
+            value={shelterData.status || ''}
             onChange={handleChange}
-          />
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              fontSize: '14px',
+              backgroundColor: 'white',
+            }}
+          >
+            <option value="">Select status...</option>
+            <option value="Available">Available</option>
+            <option value="Fully Occupied">Fully Occupied</option>
+            <option value="Under Renovation">Under Renovation</option>
+          </select>
         </label>
         <label>
           Accessibility:
