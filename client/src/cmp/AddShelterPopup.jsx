@@ -13,6 +13,13 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Additional validation for required fields
+    if (!shelterData.name || !shelterData.status || !shelterData.capacity) {
+      alert('Please fill in all required fields: Shelter Name, Status, and Capacity.');
+      return;
+    }
+    
     onSave();
   };
 
@@ -31,13 +38,21 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
           />
         </label>
         <label>
-          Shelter Name:
+          Shelter Name: <span style={{ color: 'red' }}>*</span>
           <input
             type="text"
             name="name"
             value={shelterData.name}
             onChange={handleChange}
             required
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              fontSize: '14px',
+              marginTop: '4px',
+            }}
           />
         </label>
         <label>
@@ -60,11 +75,12 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
           />
         </label>
         <label>
-          Status:
+          Status: <span style={{ color: 'red' }}>*</span>
           <select
             name="status"
             value={shelterData.status || ''}
             onChange={handleChange}
+            required
             style={{
               width: '100%',
               padding: '8px',
@@ -72,6 +88,7 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
               border: '1px solid #ddd',
               fontSize: '14px',
               backgroundColor: 'white',
+              marginTop: '4px',
             }}
           >
             <option value="">Select status...</option>
@@ -90,12 +107,22 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
           />
         </label>
         <label>
-          Capacity:
+          Capacity: <span style={{ color: 'red' }}>*</span>
           <input
-            type="text"
+            type="number"
             name="capacity"
             value={shelterData.capacity}
             onChange={handleChange}
+            required
+            min="1"
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: '4px',
+              border: '1px solid #ddd',
+              fontSize: '14px',
+              marginTop: '4px',
+            }}
           />
         </label>
         <label>

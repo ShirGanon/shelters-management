@@ -129,8 +129,6 @@ const MapView = ({ imageUrl }) => {
       formData.append('areaId', areaData.areaId);
       formData.append('name', areaData.name);
       formData.append('description', areaData.description);
-      // const imgFile = new File(["hello"], "example.png", { type: "image/png" });
-      formData.append('image', imgFile);
       if (areaData.image) {
         formData.append('image', areaData.image);
       }
@@ -287,19 +285,11 @@ const MapView = ({ imageUrl }) => {
 
       ) : (
         <div style={{ position: 'relative' }}>
-          <ImageViewWithShelters
-            markers={markers}
-            imageUrl={selectedImageUrl}
-            onImageClick={handleImageClick}
-            addShelterMode={addShelterMode}
-            onAddShelterClick={handleAddShelterClick}
-            areaId={selectedAreaId}
-          />
           <button
             onClick={handleBack}
             style={{
               position: 'absolute',
-              top: '10px',
+              top: '-50px', // Moved up above the image container
               left: '10px',
               backgroundColor: '#d9534f',
               color: 'white',
@@ -309,10 +299,19 @@ const MapView = ({ imageUrl }) => {
               cursor: 'pointer',
               fontWeight: '600',
               boxShadow: '0 2px 6px rgba(217,83,79,0.5)',
+              zIndex: 1004, // Higher z-index to ensure it's visible
             }}
           >
             Back
           </button>
+          <ImageViewWithShelters
+            markers={markers}
+            imageUrl={selectedImageUrl}
+            onImageClick={handleImageClick}
+            addShelterMode={addShelterMode}
+            onAddShelterClick={handleAddShelterClick}
+            areaId={selectedAreaId}
+          />
           {popupVisible && (
             <AddShelterPopup
               visible={popupVisible}
