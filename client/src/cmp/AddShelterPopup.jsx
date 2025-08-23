@@ -106,7 +106,7 @@ const AddShelterPopup = ({
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
-            Shelter ID:
+            Shelter ID: <span style={{ color: 'red' }}>*</span>
           </span>
           <input
             type="text"
@@ -176,7 +176,6 @@ const AddShelterPopup = ({
             Accessibility:
           </span>
           <select
-            type="text"
             name="accessibility"
             value={shelterData.accessibility || ''}
             onChange={handleChange}
@@ -186,11 +185,13 @@ const AddShelterPopup = ({
               borderRadius: '4px',
               border: '1px solid #ddd',
               fontSize: '14px',
+              backgroundColor: 'white',
             }}
-             >
-             <option value="Yes">Yes</option>
-             <option value="No">No</option>
-            </select>
+          >
+            <option value="">Select accessibility...</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
         </label>
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
@@ -235,6 +236,24 @@ const AddShelterPopup = ({
         </label>
 
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          {isEdit && (
+            <button
+              type="button"
+              onClick={onDelete}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: '#dc3545',
+                color: 'white',
+                cursor: 'pointer',
+                fontWeight: '600',
+                boxShadow: '0 2px 6px rgba(220,53,69,0.5)',
+              }}
+            >
+              Delete Shelter
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}

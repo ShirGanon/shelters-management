@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 const ImageViewWithShelters = ({
   markers,
@@ -11,6 +11,7 @@ const ImageViewWithShelters = ({
   onBackClick
 }) => {
   const [shelterList, setShelterList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const areaShelters = Array.isArray(markers)
@@ -18,6 +19,43 @@ const ImageViewWithShelters = ({
       : [];
     setShelterList(areaShelters);
   }, [markers, areaId]);
+
+  // Filter shelters based on search term
+  const filteredShelters = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return shelterList;
+    }
+    
+    return shelterList.filter(shelter => {
+      const name = shelter.name || `Shelter ${shelter.shelterId || ''}`;
+      const description = shelter.description || '';
+      const shelterId = shelter.shelterId || '';
+      const status = shelter.status || '';
+      const accessibility = shelter.accessibility || '';
+      const capacity = shelter.capacity ? shelter.capacity.toString() : '';
+      const floor = shelter.floor ? shelter.floor.toString() : '';
+      
+      const searchLower = searchTerm.toLowerCase();
+      
+      return (
+        name.toLowerCase().includes(searchLower) ||
+        description.toLowerCase().includes(searchLower) ||
+        shelterId.toLowerCase().includes(searchLower) ||
+        status.toLowerCase().includes(searchLower) ||
+        accessibility.toLowerCase().includes(searchLower) ||
+        capacity.includes(searchLower) ||
+        floor.includes(searchLower)
+      );
+    });
+  }, [shelterList, searchTerm]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
 
   const handleClick = (e) => {
     if (addShelterMode) {
@@ -63,12 +101,89 @@ const ImageViewWithShelters = ({
           fontFamily: 'Arial, sans-serif',
         }}
       >
-        <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>Shelters in Area</h3>
-        {shelterList.length === 0 ? (
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>No shelters added yet.</p>
+        <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>
+          Shelters in Area
+        </h3>
+        
+        {/* Search Input */}
+        <div style={{ marginBottom: '15px', position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Search shelters by name, ID, status, floor, capacity..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{
+              width: '100%',
+              padding: '10px 40px 10px 12px',
+              border: '1px solid #ddd',
+              borderRadius: '6px',
+              fontSize: '0.9rem',
+              outline: 'none',
+              transition: 'border-color 0.2s ease',
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#dc3545';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#ddd';
+            }}
+          />
+          
+          {/* Search Icon */}
+          <div
+            style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#666',
+              pointerEvents: searchTerm ? 'auto' : 'none',
+              cursor: searchTerm ? 'pointer' : 'default',
+            }}
+            onClick={searchTerm ? clearSearch : undefined}
+          >
+            {searchTerm ? (
+              // Clear icon (X)
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+              </svg>
+            ) : (
+              // Search icon
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            )}
+          </div>
+        </div>
+
+        {/* Results Counter */}
+        {searchTerm && (
+          <div style={{
+            marginBottom: '10px',
+            fontSize: '0.85rem',
+            color: '#666',
+            fontStyle: 'italic'
+          }}>
+            {filteredShelters.length === 0 
+              ? 'No shelters found' 
+              : `Found ${filteredShelters.length} shelter${filteredShelters.length === 1 ? '' : 's'}`
+            }
+            {searchTerm && (
+              <span style={{ marginLeft: '5px' }}>
+                for "{searchTerm}"
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Shelter List */}
+        {filteredShelters.length === 0 ? (
+          <p style={{ color: '#555', fontSize: '0.9rem' }}>
+            {searchTerm ? 'No shelters match your search.' : 'No shelters added yet.'}
+          </p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {shelterList.map((shelter, index) => (
+            {filteredShelters.map((shelter, index) => (
               <li
                 key={shelter.shelterId || `shelter-${index}`}
                 style={{
@@ -79,38 +194,83 @@ const ImageViewWithShelters = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
+                  backgroundColor: 'transparent',
+                  borderRadius: '4px',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f8f9fa';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
                 }}
               >
                 <ShelterIcon size={18} color="#dc3545" />
-                <div>
+                <div style={{ flex: 1 }}>
                   <strong>{shelter.name || `Shelter ${shelter.shelterId || index + 1}`}</strong>
+                  
+                  {/* Shelter Details */}
+                  <div style={{ margin: '5px 0', fontSize: '0.8rem', color: '#888' }}>
+                    {shelter.shelterId && (
+                      <span style={{ marginRight: '10px' }}>
+                        ID: <strong>{shelter.shelterId}</strong>
+                      </span>
+                    )}
+                    {shelter.floor && (
+                      <span style={{ marginRight: '10px' }}>
+                        Floor: <strong>{shelter.floor}</strong>
+                      </span>
+                    )}
+                    {shelter.capacity && (
+                      <span style={{ marginRight: '10px' }}>
+                        Capacity: <strong>{shelter.capacity}</strong>
+                      </span>
+                    )}
+                    {shelter.accessibility && (
+                      <span>
+                        Accessible: <strong>{shelter.accessibility}</strong>
+                      </span>
+                    )}
+                  </div>
+                  
                   <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
                     {shelter.description || 'No description'}
                   </p>
+                  
                   {shelter.status && (
                     <span style={{ 
                       fontSize: '0.8rem', 
                       color: shelter.status === 'Available' ? '#28a745' : 
                              shelter.status === 'Fully Occupied' ? '#dc3545' : '#ffc107',
-                      fontWeight: '600'
+                      fontWeight: '600',
+                      display: 'block',
+                      marginTop: '3px'
                     }}>
-                      {shelter.status}
+                      Status: {shelter.status}
                     </span>
                   )}
+                  
                   <button
                     onClick={() => onEditShelter && onEditShelter(shelter)}
                     style={{
-                      marginTop: '5px',
-                      padding: '4px 8px',
-                      fontSize: '0.75rem',
+                      marginTop: '8px',
+                      padding: '6px 12px',
+                      fontSize: '0.8rem',
                       backgroundColor: '#007bff',
                       color: 'white',
                       border: 'none',
-                      borderRadius: '3px',
+                      borderRadius: '4px',
                       cursor: 'pointer',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#0056b3';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#007bff';
                     }}
                   >
-                    Edit
+                    Edit Shelter
                   </button>
                 </div>
               </li>
