@@ -11,6 +11,26 @@ import MarkersLayer from './MarkersLayer.jsx';
 
 const imageBounds = [[0, 0], [1000, 1000]];
 
+const getAreaImageByID  = async (areaId) => {
+  try {
+    const res = await axios.get(`http://localhost:8080/areas/details/${areaId}?img=true`);
+    const img = res.data?.img;
+    const filename = res.data?.filename || '';
+    if (!img?.data) return null;
+
+    // Check MIME type from filename extension
+    let mimeType = 'image/png';
+    if (filename.endsWith('.jpg') || filename.endsWith('.jpeg')) mimeType = 'image/jpeg';
+
+    const blob = new Blob([new Uint8Array(img.data)], { type: mimeType });
+    return URL.createObjectURL(blob);
+
+  } catch (error) {
+    console.error("Error fetching area image:", error);
+    return null;
+  }
+}
+
 const MapView = ({ imageUrl }) => {
   const [markers, setMarkers] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -173,7 +193,12 @@ const MapView = ({ imageUrl }) => {
     });
   };
 
-  const handleDiveIn = (areaId, imageUrl) => {
+  const handleDiveIn = async (areaId, imageUrl) => {
+    if(!imageUrl){
+      await getAreaImageByID(areaId).then(url => {
+        imageUrl = url;
+      });
+    }
     if (areaId && imageUrl) {
       setSelectedAreaId(areaId);
       setSelectedImageUrl(imageUrl);

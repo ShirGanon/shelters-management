@@ -55,7 +55,7 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
                   Modify
                 </button>
                 <button
-                  onClick={() => onDiveClick(marker.areaId, marker.imageUrl)}
+                  onClick={async () => await onDiveClick(marker.areaId, marker.imageUrl)}
                   style={{
                     backgroundColor: '#5cb85c',
                     color: 'white',
