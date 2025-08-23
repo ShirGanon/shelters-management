@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
-const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode, onAddShelterClick, areaId, onEditShelter }) => {
+const ImageViewWithShelters = ({
+  markers,
+  imageUrl,
+  onImageClick,
+  addShelterMode,
+  onAddShelterClick,
+  areaId,
+  onEditShelter,
+  onBackClick
+}) => {
   const [shelterList, setShelterList] = useState([]);
 
   useEffect(() => {
@@ -23,7 +32,6 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
     }
   };
 
-  // Shelter Icon Component
   const ShelterIcon = ({ size = 32, color = '#dc3545' }) => (
     <svg
       width={size}
@@ -33,37 +41,6 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
       style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
     >
       <path d="M12 2L2 9h3v11h6v-6h2v6h6V9h3L12 2zm0 2.84L18 9v9h-2v-6h-6v6H8V9l4-4.16z"/>
-    </svg>
-  );
-
-  // Alternative Shelter Building Icon
-  const ShelterBuildingIcon = ({ size = 20, color = '#2c5282' }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={color}
-      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
-    >
-      <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.69L18 12v6h-2v-6h-6v6H8v-6l4-6.31z"/>
-      <circle cx="12" cy="9" r="1"/>
-    </svg>
-  );
-
-  // Emergency Shelter Icon (with person)
-  const EmergencyShelterIcon = ({ size = 20, color = '#2c5282' }) => (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={color}
-      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
-    >
-      <path d="M12 1L1 8v2h2v11h18V10h2V8L12 1zm0 2.5L19.5 9H4.5L12 3.5zM5 11h14v7H5v-7z"/>
-      <circle cx="8" cy="13" r="1"/>
-      <path d="M7 15h2v2H7z"/>
-      <circle cx="16" cy="13" r="1"/>
-      <path d="M15 15h2v2h-2z"/>
     </svg>
   );
 
@@ -142,7 +119,7 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
         )}
       </div>
 
-      {/* Map */}
+      {/* Image Container */}
       <div
         style={{
           position: 'relative',
@@ -154,6 +131,54 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
           overflow: 'hidden'
         }}
       >
+        {/* Toolbar */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            display: 'flex',
+            gap: '10px',
+            background: 'rgba(255,255,255,0.85)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            zIndex: 1000,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+          }}
+        >
+          {/* Back Button */}
+          <button
+            onClick={onBackClick} // הפונקציונליות של הכפתור Back הרגיל
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: '#d9534f',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            Back
+          </button>
+
+          {/* Add New Shelter */}
+          <button
+            onClick={onAddShelterClick}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: addShelterMode ? '#dc3545' : '#05cb5a',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            {addShelterMode ? 'Cancel Add Shelter' : 'Add New Shelter'}
+          </button>
+        </div>
+
         <img
           src={imageUrl}
           alt="Area Detail"
@@ -200,27 +225,6 @@ const ImageViewWithShelters = ({ markers, imageUrl, onImageClick, addShelterMode
             )
           ))
         }
-
-        <button
-          onClick={onAddShelterClick}
-          style={{
-            position: 'absolute',
-            top: '50px',
-            left: '10px',
-            backgroundColor: addShelterMode ? '#d9534f' : '#4a90e2',
-            color: 'white',
-            padding: '8px 18px',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: '600',
-            zIndex: '9999',
-            boxShadow: `0 2px 6px rgba(${addShelterMode ? '217,83,79' : '74,144,226'},0.5)`,
-            transition: 'background-color 0.3s ease',
-          }}
-        >
-          {addShelterMode ? 'Cancel Add Shelter' : 'Add Shelter'}
-        </button>
       </div>
     </>
   );

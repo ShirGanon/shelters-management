@@ -27,19 +27,19 @@
 }
 
 .map-container {
-  position: relative;   /* חשוב כדי שהכפתור ימוקם יחסית למפה */
+  position: relative;   
   top: -160px;
   width: 800px;
   height: 600px;
-  background-color: hsl(200, 21%, 95%); /* רקע לבן שמנת */
+  background-color: hsl(200, 21%, 95%); 
   margin: 0 auto
 }
 
 .add-area-button {
-  position: absolute;  /* מעל המפה */
-  top: 10px;           /* מרחק מהחלק העליון של המפה */
-  left: 10px;          /* מתחיל בצד שמאל */
-  padding: 12px 20px;  /* גודל הכפתור */
+  position: absolute;  
+  top: 10px;           
+  left: 10px;          
+  padding: 12px 20px;  
   font-size: 1rem;
   font-weight: 600;
   background-color: #05cb5a;
@@ -48,7 +48,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  z-index: 1001;       /* מעל שכבות אחרות */
+  z-index: 1001;    
 }
 
 .add-area-button.active {
@@ -101,7 +101,7 @@
   right: 5%;
   background: #fff;
   padding: 40px;
-  border: 2px solid #023b79;
+  border: 2px solid #05cb5a;
   border-radius: 10px;
   width: 400px;
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
@@ -133,11 +133,11 @@
 }
 
 .leaflet-control-zoom {
-  top: 60px;  /* מרים את כפתורי + / - מעט למטה */
+  top: 60px;  
 }
 
 body {
-  background-color: #effbf2; /* בז בהיר */
+  background-color: #effbf2; 
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;

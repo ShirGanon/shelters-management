@@ -6,7 +6,7 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
     <div
       style={{
         position: 'absolute',
-        top: '80px',
+        top: '0px',
         left: '10px',
         backgroundColor: 'white',
         padding: '15px',

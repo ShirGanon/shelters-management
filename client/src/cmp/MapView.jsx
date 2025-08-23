@@ -343,25 +343,6 @@ const MapView = ({ imageUrl }) => {
         </div>
       ) : (
         <div style={{ position: 'relative' }}>
-          <button
-            onClick={handleBack}
-            style={{
-              position: 'absolute',
-              top: '-50px',
-              left: '10px',
-              backgroundColor: '#d9534f',
-              color: 'white',
-              padding: '8px 18px',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              boxShadow: '0 2px 6px rgba(217,83,79,0.5)',
-              zIndex: 1004,
-            }}
-          >
-            Back
-          </button>
           <ImageViewWithShelters
             markers={markers}
             imageUrl={selectedImageUrl}
@@ -370,6 +351,7 @@ const MapView = ({ imageUrl }) => {
             onAddShelterClick={handleAddShelterClick}
             areaId={selectedAreaId}
             onEditShelter={handleEditShelter}
+            onBackClick={handleBack}
           />
           {popupVisible && (
             <AddShelterPopup

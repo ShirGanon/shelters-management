@@ -1,13 +1,27 @@
 import React from 'react';
 
-const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setShelterData, areaId, areaImageUrl, isEdit = false }) => {
+const AddShelterPopup = ({
+  visible,
+  onClose,
+  onSave,
+  shelterData,
+  setShelterData,
+  areaId,
+  areaImageUrl,
+  isEdit = false
+}) => {
   if (!visible) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setShelterData(prev => ({
+    setShelterData((prev) => ({
       ...prev,
-      [name]: name === 'floor' || name === 'capacity' ? (value === '' ? '' : Number(value)) : value,
+      [name]:
+        name === 'floor' || name === 'capacity'
+          ? value === ''
+            ? ''
+            : Number(value)
+          : value,
       areaId,
       imageUrl: areaImageUrl,
     }));
@@ -15,22 +29,24 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!shelterData.name || !shelterData.status || !shelterData.capacity) {
-      alert('Please fill in all required fields: Shelter Name, Status, and Capacity.');
+      alert(
+        'Please fill in all required fields: Shelter Name, Status, and Capacity.'
+      );
       return;
     }
-    
+
     onSave();
   };
 
   return (
-    <div 
-      className="shelter-form" 
-      style={{ 
-        position: 'absolute',
-        top: position.y, 
-        left: position.x, 
+    <div
+      className="shelter-form"
+      style={{
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
         transform: 'translate(-50%, -50%)',
         backgroundColor: 'white',
         padding: '20px',
@@ -45,8 +61,11 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         <h3 style={{ marginBottom: '15px', color: '#222' }}>
           {isEdit ? 'Edit Shelter Details' : 'Add New Shelter'}
         </h3>
+
         <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Area ID:</span>
+          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
+            Area ID:
+          </span>
           <input
             type="text"
             name="areaId"
@@ -86,7 +105,9 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         </label>
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Shelter ID:</span>
+          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
+            Shelter ID:
+          </span>
           <input
             type="text"
             name="shelterId"
@@ -107,7 +128,9 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         </label>
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Floor:</span>
+          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
+            Floor:
+          </span>
           <input
             type="number"
             name="floor"
@@ -149,8 +172,10 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         </label>
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Accessibility:</span>
-          <input
+          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
+            Accessibility:
+          </span>
+          <select
             type="text"
             name="accessibility"
             value={shelterData.accessibility || ''}
@@ -162,7 +187,10 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
               border: '1px solid #ddd',
               fontSize: '14px',
             }}
-          />
+             >
+             <option value="Yes">Yes</option>
+             <option value="No">No</option>
+            </select>
         </label>
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
@@ -187,7 +215,9 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
         </label>
 
         <label style={{ display: 'block', marginBottom: '15px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>Description:</span>
+          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
+            Description:
+          </span>
           <textarea
             name="description"
             value={shelterData.description || ''}
@@ -203,6 +233,7 @@ const AddShelterPopup = ({ visible, position, onClose, onSave, shelterData, setS
             }}
           />
         </label>
+
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
           <button
             type="button"
