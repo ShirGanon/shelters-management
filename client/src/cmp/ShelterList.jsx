@@ -12,14 +12,14 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        maxHeight: '400px',
+        maxHeight: '730px',
         overflowY: 'auto',
         zIndex: 1000,
-        width: '250px',
+        width: '400px',
         fontFamily: 'Arial, sans-serif',
       }}
     >
-      <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>Area List</h3>
+      <h3 style={{ marginBottom: '15px',  color: '#222', fontSize: '1.2rem' }}>Area List</h3>
       {areaMarkers.length === 0 ? (
         <p style={{ color: '#555', fontSize: '0.9rem' }}>No areas added yet.</p>
       ) : (

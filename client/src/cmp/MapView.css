@@ -60,7 +60,7 @@
    ========================================================= */
 .shelter-list {
   position: fixed;
-  top: 0px;
+  top: 10px;
   left: 10px;
   background-color: white;
   padding: 15px;

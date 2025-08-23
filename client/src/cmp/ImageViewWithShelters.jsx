@@ -56,10 +56,10 @@ const ImageViewWithShelters = ({
           padding: '15px',
           borderRadius: '0 0 8px 8px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          maxHeight: '400px',
+          maxHeight: '730px',
           overflowY: 'auto',
           zIndex: 1003,
-          width: '250px',
+          width: '500px',
           fontFamily: 'Arial, sans-serif',
         }}
       >
@@ -148,7 +148,7 @@ const ImageViewWithShelters = ({
         >
           {/* Back Button */}
           <button
-            onClick={onBackClick} // הפונקציונליות של הכפתור Back הרגיל
+            onClick={onBackClick} 
             style={{
               padding: '8px 16px',
               border: 'none',
