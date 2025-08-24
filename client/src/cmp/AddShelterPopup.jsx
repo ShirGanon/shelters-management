@@ -30,9 +30,9 @@ const AddShelterPopup = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!shelterData.name || !shelterData.status || !shelterData.capacity) {
+    if (!shelterData.name || !shelterData.status || !shelterData.capacity || !shelterData.accessibility) {
       alert(
-        'Please fill in all required fields: Shelter Name, Status, and Capacity.'
+        'Please fill in all required fields: Shelter Name, Status, Capacity, and Accessibility.'
       );
       return;
     }
@@ -173,12 +173,13 @@ const AddShelterPopup = ({
 
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
-            Accessibility:
+            Accessibility: <span style={{ color: 'red' }}>*</span>
           </span>
           <select
             name="accessibility"
             value={shelterData.accessibility || ''}
             onChange={handleChange}
+            required
             style={{
               width: '100%',
               padding: '8px',
