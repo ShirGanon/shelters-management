@@ -33,6 +33,7 @@ const getAreaImageByID  = async (areaId) => {
 
 const MapView = ({ imageUrl }) => {
   const [markers, setMarkers] = useState([]);
+  const [shelterList, setShelterList] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentLatLng, setCurrentLatLng] = useState(null);
   const [areaCounter, setAreaCounter] = useState(1);
@@ -308,7 +309,7 @@ const MapView = ({ imageUrl }) => {
         shelterId: shelterData.shelterId,
         ...shelterData,
       };
-      setMarkers(prev => [...prev, newMarker]);
+      setShelterList(prev => [...prev, newMarker]);
       setPopupVisible(false);
       setAddShelterMode(false);
       setAreaCounter(prev => prev + 1);
@@ -369,7 +370,9 @@ const MapView = ({ imageUrl }) => {
       ) : (
         <div style={{ position: 'relative' }}>
           <ImageViewWithShelters
-            markers={markers}
+            // markers={markers}
+            shelterList={shelterList}
+            setShelterList={setShelterList}
             imageUrl={selectedImageUrl}
             onImageClick={handleImageClick}
             addShelterMode={addShelterMode}

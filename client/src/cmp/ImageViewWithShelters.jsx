@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 
 const ImageViewWithShelters = ({
   markers,
+  shelterList,
+  setShelterList,
   imageUrl,
   onImageClick,
   addShelterMode,
@@ -10,15 +13,31 @@ const ImageViewWithShelters = ({
   onEditShelter,
   onBackClick
 }) => {
-  const [shelterList, setShelterList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const areaShelters = Array.isArray(markers)
-      ? markers.filter(marker => marker.areaId === areaId && marker.shelterId)
-      : [];
-    setShelterList(areaShelters);
-  }, [markers, areaId]);
+    if (!areaId) {
+      setShelterList([]);
+      return;
+    }
+    axios.get(`http://localhost:8080/shelters/area/${areaId}`)
+      .then(res => {
+        // Map API fields to your UI structure
+        const shelters = Array.isArray(res.data)
+          ? res.data.map(shelter => ({
+              ...shelter,
+              shelterId: shelter.id,
+              areaId: shelter.area_id,
+              latlng: { lat: shelter.lat, lng: shelter.lng }
+            }))
+          : [];
+        setShelterList(shelters);
+      })
+      .catch(err => {
+        console.error("Failed to fetch shelters:", err);
+        setShelterList([]);
+      });
+  }, [areaId]);
 
   // Filter shelters based on search term
   const filteredShelters = useMemo(() => {
@@ -352,8 +371,7 @@ const ImageViewWithShelters = ({
           }}
         />
 
-        {Array.isArray(markers) && markers
-          .filter(marker => marker.areaId === areaId && marker.shelterId)
+        {Array.isArray(shelterList) && shelterList
           .map((marker, index) => (
             marker.latlng && (
               <div
