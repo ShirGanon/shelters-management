@@ -41,7 +41,7 @@ const Modal = ({ visible, onClose, onSave, onDelete, areaData, setAreaData, isEd
         backgroundColor: 'white', padding: '20px', borderRadius: '8px',
         width: '320px', maxHeight: '80vh', overflowY: 'auto',
         direction: 'ltr',
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: 'cursive',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
       }}>
         <h3 style={{ marginBottom: '20px', color: '#222' }}>{isEdit ? 'Edit Area Details' : 'Area Details'}</h3>

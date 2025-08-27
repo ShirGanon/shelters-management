@@ -12,11 +12,11 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        maxHeight: '730px',
+        maxHeight: '1000px',
         overflowY: 'auto',
         zIndex: 1000,
         width: '400px',
-        fontFamily: 'Arial, sans-serif',
+        fontFamily: 'cursive',
       }}
     >
       <h3 style={{ marginBottom: '15px',  color: '#222', fontSize: '1.2rem' }}>Area List</h3>

@@ -93,7 +93,7 @@ const ImageViewWithShelters = ({
           overflowY: 'auto',
           zIndex: 1003,
           width: '400px',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'cursive',
         }}
       >
         <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>
