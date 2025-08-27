@@ -84,6 +84,37 @@ const MapView = ({ imageUrl }) => {
       });
   }, []);
 
+const handleMarkerDive = async (marker) => {
+  // Fetch area image if not already
+  let imageUrl = marker.imageUrl;
+  if (!imageUrl) {
+    imageUrl = await getAreaImageByID(marker.areaId);
+  }
+
+  if (marker.areaId && imageUrl) {
+    setSelectedAreaId(marker.areaId);
+    setSelectedImageUrl(imageUrl);
+    setShowImageView(true);
+
+    // Fetch shelters for this area
+    axios.get(`http://localhost:8080/shelters/area/${marker.areaId}`)
+      .then(res => {
+        const shelters = Array.isArray(res.data)
+          ? res.data.map(shelter => ({
+              ...shelter,
+              shelterId: shelter.id,
+              areaId: shelter.area_id,
+              latlng: { lat: shelter.lat, lng: shelter.lng }
+            }))
+          : [];
+        setShelterList(shelters);
+      })
+      .catch(err => {
+        console.error("Failed to fetch shelters:", err);
+        setShelterList([]);
+      });
+  }
+};
   const handleAddClick = (latlng) => {
     setCurrentLatLng(latlng);
     setAreaData({
@@ -361,6 +392,7 @@ const MapView = ({ imageUrl }) => {
             defaultIcon={defaultIcon}
             handleMarkerClick={handleMarkerClick}
             handleMarkerDragEnd={handleMarkerDragEnd}
+             handleMarkerDive={handleMarkerDive}   
             handleAddClick={handleAddClick}
             addMode={addMode}
             imageBounds={imageBounds}

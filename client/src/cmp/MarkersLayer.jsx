@@ -1,6 +1,6 @@
 // MarkersLayer.jsx
 import React from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup } from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup,Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import AddMarkerOnClick from './AddMarkerOnClick.jsx';
 
@@ -9,6 +9,7 @@ const MarkersLayer = ({
   markers,
   defaultIcon,
   handleMarkerClick,
+  handleMarkerDive, // <-- add this
   handleMarkerDragEnd,
   handleAddClick,
   addMode,
@@ -46,12 +47,21 @@ const MarkersLayer = ({
                 key={marker.areaId || `marker-${index}`}
                 position={marker.latlng}
                 icon={defaultIcon}
-                draggable={true}
+                draggable={addMode} // draggable only in addMode
                 eventHandlers={{
                   dragend: (e) => handleMarkerDragEnd(e, index),
-                  click: () => handleMarkerClick(marker, index),
+                  click: () => {
+                    if (addMode) {
+                      handleMarkerClick(marker, index); // normal edit
+                    } else if (handleMarkerDive) {
+                      handleMarkerDive(marker); // dive into shelters
+                    }
+                  },
                 }}
               >
+                <Tooltip direction="top" offset={[0, -10]} opacity={0.9} permanent={false}>
+               {marker.name ? `${marker.name} (${marker.areaId})` : `Area ${marker.areaId}`}
+                </Tooltip>
                 <Popup>
                   <div style={{ maxWidth: 200 }}>
                     <h4 style={{ marginBottom: 6 }}>

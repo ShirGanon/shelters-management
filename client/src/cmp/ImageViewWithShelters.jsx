@@ -13,7 +13,11 @@ const ImageViewWithShelters = ({
   onEditShelter,
   onBackClick
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: '',
+    accessibility: '',
+    minCapacity: ''
+  });
 
   useEffect(() => {
     if (!areaId) {
@@ -22,7 +26,6 @@ const ImageViewWithShelters = ({
     }
     axios.get(`http://localhost:8080/shelters/area/${areaId}`)
       .then(res => {
-        // Map API fields to your UI structure
         const shelters = Array.isArray(res.data)
           ? res.data.map(shelter => ({
               ...shelter,
@@ -39,42 +42,15 @@ const ImageViewWithShelters = ({
       });
   }, [areaId]);
 
-  // Filter shelters based on search term
+  // Filter shelters based on filters
   const filteredShelters = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return shelterList;
-    }
-    
     return shelterList.filter(shelter => {
-      const name = shelter.name || `Shelter ${shelter.shelterId || ''}`;
-      const description = shelter.description || '';
-      const shelterId = shelter.shelterId || '';
-      const status = shelter.status || '';
-      const accessibility = shelter.accessibility || '';
-      const capacity = shelter.capacity ? shelter.capacity.toString() : '';
-      const floor = shelter.floor ? shelter.floor.toString() : '';
-      
-      const searchLower = searchTerm.toLowerCase();
-      
-      return (
-        name.toLowerCase().includes(searchLower) ||
-        description.toLowerCase().includes(searchLower) ||
-        shelterId.toLowerCase().includes(searchLower) ||
-        status.toLowerCase().includes(searchLower) ||
-        accessibility.toLowerCase().includes(searchLower) ||
-        capacity.includes(searchLower) ||
-        floor.includes(searchLower)
-      );
+      const matchesStatus = !filters.status || shelter.status === filters.status;
+      const matchesAccessibility = !filters.accessibility || shelter.accessibility === filters.accessibility;
+      const matchesCapacity = !filters.minCapacity || (shelter.capacity && shelter.capacity >= parseInt(filters.minCapacity));
+      return matchesStatus && matchesAccessibility && matchesCapacity;
     });
-  }, [shelterList, searchTerm]);
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const clearSearch = () => {
-    setSearchTerm('');
-  };
+  }, [shelterList, filters]);
 
   const handleClick = (e) => {
     if (addShelterMode) {
@@ -116,89 +92,89 @@ const ImageViewWithShelters = ({
           maxHeight: '730px',
           overflowY: 'auto',
           zIndex: 1003,
-          width: '500px',
+          width: '400px',
           fontFamily: 'Arial, sans-serif',
         }}
       >
         <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>
-          Shelters in Area
+        Shelters in Area {areaId || 'N/A'}
         </h3>
         
-        {/* Search Input */}
-        <div style={{ marginBottom: '15px', position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="Search shelters by name, ID, status, floor, capacity..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{
-              width: '100%',
-              padding: '10px 40px 10px 12px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              fontSize: '0.9rem',
-              outline: 'none',
-              transition: 'border-color 0.2s ease',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#dc3545';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#ddd';
-            }}
-          />
-          
-          {/* Search Icon */}
-          <div
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#666',
-              pointerEvents: searchTerm ? 'auto' : 'none',
-              cursor: searchTerm ? 'pointer' : 'default',
-            }}
-            onClick={searchTerm ? clearSearch : undefined}
-          >
-            {searchTerm ? (
-              // Clear icon (X)
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-            ) : (
-              // Search icon
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-              </svg>
-            )}
-          </div>
+        {/* Filters Section */}
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Status:
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            >
+              <option value="">All</option>
+              <option value="Available">Available</option>
+              <option value="Fully Occupied">Fully Occupied</option>
+              <option value="Under Renovation">Under Renovation</option>
+            </select>
+          </label>
+
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Accessibility:
+            <select
+              value={filters.accessibility}
+              onChange={(e) => setFilters({ ...filters, accessibility: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            >
+              <option value="">All</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </label>
+
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Min Capacity:
+            <input
+              type="number"
+              value={filters.minCapacity}
+              onChange={(e) => setFilters({ ...filters, minCapacity: e.target.value })}
+              placeholder="Enter minimum capacity"
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            />
+          </label>
         </div>
 
         {/* Results Counter */}
-        {searchTerm && (
-          <div style={{
-            marginBottom: '10px',
-            fontSize: '0.85rem',
-            color: '#666',
-            fontStyle: 'italic'
-          }}>
-            {filteredShelters.length === 0 
-              ? 'No shelters found' 
-              : `Found ${filteredShelters.length} shelter${filteredShelters.length === 1 ? '' : 's'}`
-            }
-            {searchTerm && (
-              <span style={{ marginLeft: '5px' }}>
-                for "{searchTerm}"
-              </span>
-            )}
-          </div>
-        )}
+        <div style={{
+          marginBottom: '10px',
+          fontSize: '0.85rem',
+          color: '#666',
+          fontStyle: 'italic'
+        }}>
+          {filteredShelters.length === 0 
+            ? 'No shelters found' 
+            : `Showing ${filteredShelters.length} shelter${filteredShelters.length === 1 ? '' : 's'}`}
+        </div>
 
         {/* Shelter List */}
         {filteredShelters.length === 0 ? (
           <p style={{ color: '#555', fontSize: '0.9rem' }}>
-            {searchTerm ? 'No shelters match your search.' : 'No shelters added yet.'}
+            No shelters match the filter.
           </p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>

@@ -8,7 +8,8 @@ const AddShelterPopup = ({
   setShelterData,
   areaId,
   areaImageUrl,
-  isEdit = false
+  isEdit = false,
+  onDelete
 }) => {
   if (!visible) return null;
 
@@ -30,7 +31,12 @@ const AddShelterPopup = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!shelterData.name || !shelterData.status || !shelterData.capacity || !shelterData.accessibility) {
+    if (
+      !shelterData.name ||
+      !shelterData.status ||
+      !shelterData.capacity ||
+      !shelterData.accessibility
+    ) {
       alert(
         'Please fill in all required fields: Shelter Name, Status, Capacity, and Accessibility.'
       );
@@ -62,6 +68,7 @@ const AddShelterPopup = ({
           {isEdit ? 'Edit Shelter Details' : 'Add New Shelter'}
         </h3>
 
+        {/* Area ID */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Area ID:
@@ -84,6 +91,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* Shelter Name */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Shelter Name: <span style={{ color: 'red' }}>*</span>
@@ -104,6 +112,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* Shelter ID */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Shelter ID: <span style={{ color: 'red' }}>*</span>
@@ -127,6 +136,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* Floor */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Floor:
@@ -146,6 +156,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* Status */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Status: <span style={{ color: 'red' }}>*</span>
@@ -171,6 +182,7 @@ const AddShelterPopup = ({
           </select>
         </label>
 
+        {/* Accessibility */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Accessibility: <span style={{ color: 'red' }}>*</span>
@@ -195,6 +207,7 @@ const AddShelterPopup = ({
           </select>
         </label>
 
+        {/* Capacity */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Capacity: <span style={{ color: 'red' }}>*</span>
@@ -216,6 +229,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* Description */}
         <label style={{ display: 'block', marginBottom: '15px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
             Description:
@@ -236,6 +250,7 @@ const AddShelterPopup = ({
           />
         </label>
 
+        {/* כפתורים */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
           {isEdit && (
             <button
