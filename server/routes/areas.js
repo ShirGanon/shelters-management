@@ -74,7 +74,7 @@ router.get("/details/:id", async (req, res) => {
 });
 
 
-router.post("/upload", upload.single("image"), validateParams(["name", "description"]), async (req, res) => {
+router.post("/upload", upload.single("image"), validateParams(["name", "description", "lat", "lng"]), async (req, res) => {
     try {
       const { name, description } = req.body;
       const { originalname, path: tempPath } = req.file;
@@ -88,6 +88,8 @@ router.post("/upload", upload.single("image"), validateParams(["name", "descript
         description: description,
         filename: originalname,
         img: buffer,
+        lat: parseFloat(req.body.lat),
+        lng: parseFloat(req.body.lng),
       })
         .then((areaId) => {
           console.log(`Area added with ID: ${areaId}`);

@@ -73,7 +73,7 @@ const MapView = ({ imageUrl }) => {
         const data = Array.isArray(res.data) ? res.data.map((item, index) => ({
           ...item,
           areaId: item.id || `area-${index + 1}`,
-          latlng: item.latlng || { lat: 500, lng: 500 },
+          latlng: (item.lat !== undefined && item.lng !== undefined) ? { lat: item.lat, lng: item.lng } : { lat: 500, lng: 500 },
         })) : [];
         setMarkers(data);
         setAreaCounter(data.length + 1);

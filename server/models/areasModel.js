@@ -1,7 +1,7 @@
 import db from '../utils/mysql.js';
 
-const areasFullSchema = ['id', 'name', 'description', 'filename', 'img', 'created_at'];
-const areasLightSchema = ['id', 'name', 'description', 'filename', 'created_at']; // Define the schema for areas without img
+const areasFullSchema = ['id', 'name', 'description', 'filename', 'img', 'lat', 'lng', 'created_at'];
+const areasLightSchema = ['id', 'name', 'description', 'filename', 'lat', 'lng', 'created_at']; // Define the schema for areas without img
 
 export const getAllAreas = async (img=false) => 
 {
@@ -24,11 +24,11 @@ export const getAreaByName = async (name, img=false) =>
     return rows.length > 0 ? rows[0] : null;
 }
 
-export const addArea = async ({ name, description, filename, img }) => {
+export const addArea = async ({ name, description, filename, img, lat, lng }) => {
     try {
         const [result] = await db.query(
-            'INSERT INTO areas (name, description, filename, img) VALUES (?, ?, ?, ?)',
-            [name, description, filename, img]
+            'INSERT INTO areas (name, description, filename, img, lat, lng) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, description, filename, img, lat, lng]
         );
         return result.insertId;
     } catch (error) {

@@ -40,7 +40,7 @@ const MarkersLayer = ({
 
       {Array.isArray(markers) &&
         markers
-          .filter((marker) => !marker.shelterId)
+          // .filter((marker) => !marker.shelterId)
           .map((marker, index) =>
             marker.latlng ? (
               <Marker
