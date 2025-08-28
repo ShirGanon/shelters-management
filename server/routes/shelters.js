@@ -65,6 +65,7 @@ router.delete("/delete/:id", async (req, res) => {
   await deleteShelter(id)
     .then((success) => {
       if (success) {
+        console.log(`Shelter with ID ${id} deleted`);
         res.send(`Shelter with ID ${id} deleted`);
       } else {
         res.status(404).send("Shelter not found");

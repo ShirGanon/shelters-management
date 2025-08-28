@@ -12,7 +12,7 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        maxHeight: '1000px',
+        maxHeight: '100vh',
         overflowY: 'auto',
         zIndex: 1000,
         width: '400px',

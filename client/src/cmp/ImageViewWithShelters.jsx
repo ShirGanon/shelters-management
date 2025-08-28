@@ -11,7 +11,7 @@ const ImageViewWithShelters = ({
   onAddShelterClick,
   areaId,
   onEditShelter,
-  onBackClick
+  onBackClick,
 }) => {
   const [filters, setFilters] = useState({
     status: '',
@@ -278,7 +278,7 @@ const ImageViewWithShelters = ({
       <div
         style={{
           position: 'relative',
-          top: '-160px',
+          // top: '-160px',
           height: '600px',
           width: '100%',
           borderRadius: '8px',

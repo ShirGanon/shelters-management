@@ -1,14 +1,6 @@
 /* =========================================================
    📌 Layout & Global Styling
    ========================================================= */
-.min-h-screen {
-  min-height: 1100px;
-  min-width: 1100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
 /* =========================================================
    📌 App Title
@@ -28,7 +20,6 @@
 
 .map-container {
   position: relative;   
-  top: -160px;
   width: 800px;
   height: 600px;
   background-color: hsl(200, 21%, 95%); 
@@ -60,7 +51,7 @@
    ========================================================= */
 .shelter-list {
   position: fixed;
-  top: 10px;
+  top: 10px; 
   left: 10px;
   background-color: white;
   padding: 15px;
@@ -68,7 +59,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   max-height: 400px;
   overflow-y: auto;
-  z-index: 1003;
+  z-index: 1000;
   width: 250px;
   font-family: cursive;
 }

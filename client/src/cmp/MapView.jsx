@@ -247,6 +247,13 @@ const handleMarkerDive = async (marker) => {
     setEditShelterIndex(null);
   };
 
+  const handleDeleteShelter = (shelterIdToDelete) => {
+    setShelterList(prev => prev.filter(shelter => shelter.shelterId !== shelterIdToDelete));
+    axios.delete(`http://localhost:8080/shelters/delete/${shelterIdToDelete}`)
+      .then(res => console.log("Deleted shelter:", res.data))
+      .catch(err => console.error("Error deleting shelter:", err));
+  };
+
   const handleImageClick = (e) => {
     if (addShelterMode) {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -366,7 +373,10 @@ const handleMarkerDive = async (marker) => {
 
   return (
     <>
-      <h1 className="app-title">Welcome to Shelter API</h1>
+      {/* <h1 className="app-title">Welcome to Shelter API</h1> */}
+      {/* <div className="logo-image-wrapper">
+        <img src="../Main_Logo.png" alt="Map" className="map-image" />
+      </div> */}
 
       {!showImageView && (
         <ShelterList
@@ -400,7 +410,7 @@ const handleMarkerDive = async (marker) => {
           />
         </div>
       ) : (
-        <div style={{ position: 'relative' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center' }}>
           <ImageViewWithShelters
             // markers={markers}
             shelterList={shelterList}
@@ -412,6 +422,7 @@ const handleMarkerDive = async (marker) => {
             areaId={selectedAreaId}
             onEditShelter={handleEditShelter}
             onBackClick={handleBack}
+            onDeleteShelter={handleDeleteShelter}
           />
           {popupVisible && (
             <AddShelterPopup
@@ -427,6 +438,10 @@ const handleMarkerDive = async (marker) => {
               areaId={selectedAreaId}
               areaImageUrl={selectedImageUrl}
               isEdit={editShelterIndex !== null}
+              onDelete={() => {
+                handleDeleteShelter(shelterData.shelterId);
+                setPopupVisible(false);
+              }}
             />
           )}
         </div>
