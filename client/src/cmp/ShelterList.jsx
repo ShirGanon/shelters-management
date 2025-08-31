@@ -12,9 +12,8 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId, onDe
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        height: '100vh',
-        maxHeight: '300vh',
-        overflowY: 'autoscroll',
+        maxHeight: 'calc(100vh - 20px)', // Adjusted max-height to prevent overflow
+        overflowY: 'auto', // Corrected to 'auto' for proper scrolling
         zIndex: 1000,
         width: '400px',
         fontFamily: 'cursive',
