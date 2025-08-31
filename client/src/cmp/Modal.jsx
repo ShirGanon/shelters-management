@@ -112,89 +112,90 @@ const Modal = ({ visible, onClose, onSave, onDelete, areaData, setAreaData, isEd
           />
         </label>
 
-        <label style={{ display: 'block', marginBottom: '20px', color: '#555' }}>
-          Upload Image: {!isEdit && <span style={{ color: 'red' }}>*</span>}
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={handleChange}
-            required={!isEdit} // Required only for new areas
-            style={{ display: 'none' }}
-            id="image-upload-input"
-          />
-          <label
-            htmlFor="image-upload-input"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '12px',
-              marginTop: '8px',
-              border: !isEdit && !areaData.image ? '2px dashed #e74c3c' : '2px dashed grey',
-              borderRadius: '8px',
-              backgroundColor: '#fafafa',
-              color: !isEdit && !areaData.image ? '#e74c3c' : '#666',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s ease',
-              userSelect: 'none',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fafafa')}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20"
-              viewBox="0 0 24 24"
-              width="20"
-              fill={!isEdit && !areaData.image ? '#e74c3c' : '#666'}
-              style={{ marginRight: '8px' }}
-              aria-hidden="true"
-            >
-              <path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4H10v-4h4v4h1.83v-4h3.84L12 2z" />
-            </svg>
-            {!isEdit && !areaData.image 
-              ? 'Required: Click or Drag to Upload Image' 
-              : 'Click or Drag to Upload Image'
-            }
-          </label>
-          
-          {/* Show validation message for new areas without image */}
-          {!isEdit && !areaData.image && (
-            <div style={{
-              marginTop: '5px',
-              fontSize: '0.85rem',
-              color: '#e74c3c',
-              fontStyle: 'italic'
-            }}>
-              Image is required for new areas
-            </div>
-          )}
-          
-          {areaData.image && (
-            <div
-              style={{
-                marginTop: '8px',
-                fontStyle: 'italic',
-                color: '#28a745',
-                fontSize: '0.9rem',
-                overflowWrap: 'break-word',
-                maxWidth: '100%',
-              }}
-            >
-              ✓ Selected file: {areaData.image.name}
-            </div>
-          )}
-          {areaData.imageUrl && (
-            <img
-              src={areaData.imageUrl}
-              alt="Preview"
-              style={{ marginTop: '10px', maxWidth: '100%', borderRadius: '6px', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+        {!isEdit && (
+          <label style={{ display: 'block', marginBottom: '20px', color: '#555' }}>
+            Upload Image: {!isEdit && <span style={{ color: 'red' }}>*</span>}
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+              required={!isEdit} // Required only for new areas
+              style={{ display: 'none' }}
+              id="image-upload-input"
             />
-          )}
-        </label>
-
+            <label
+              htmlFor="image-upload-input"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px',
+                marginTop: '8px',
+                border: !isEdit && !areaData.image ? '2px dashed #e74c3c' : '2px dashed grey',
+                borderRadius: '8px',
+                backgroundColor: '#fafafa',
+                color: !isEdit && !areaData.image ? '#e74c3c' : '#666',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                userSelect: 'none',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fafafa')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20"
+                viewBox="0 0 24 24"
+                width="20"
+                fill={!isEdit && !areaData.image ? '#e74c3c' : '#666'}
+                style={{ marginRight: '8px' }}
+                aria-hidden="true"
+              >
+                <path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.84v4H10v-4h4v4h1.83v-4h3.84L12 2z" />
+              </svg>
+              {!isEdit && !areaData.image 
+                ? 'Required: Click or Drag to Upload Image' 
+                : 'Click or Drag to Upload Image'
+              }
+            </label>
+            
+            {/* Show validation message for new areas without image */}
+            {!isEdit && !areaData.image && (
+              <div style={{
+                marginTop: '5px',
+                fontSize: '0.85rem',
+                color: '#e74c3c',
+                fontStyle: 'italic'
+              }}>
+                Image is required for new areas
+              </div>
+            )}
+            
+            {areaData.image && (
+              <div
+                style={{
+                  marginTop: '8px',
+                  fontStyle: 'italic',
+                  color: '#28a745',
+                  fontSize: '0.9rem',
+                  overflowWrap: 'break-word',
+                  maxWidth: '100%',
+                }}
+              >
+                ✓ Selected file: {areaData.image.name}
+              </div>
+            )}
+            {areaData.imageUrl && (
+              <img
+                src={areaData.imageUrl}
+                alt="Preview"
+                style={{ marginTop: '10px', maxWidth: '100%', borderRadius: '6px', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+              />
+            )}
+          </label>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
           <div style={{ flexGrow: 1 }}>
             <button
