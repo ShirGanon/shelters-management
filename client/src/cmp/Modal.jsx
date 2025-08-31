@@ -46,28 +46,29 @@ const Modal = ({ visible, onClose, onSave, onDelete, areaData, setAreaData, isEd
       }}>
         <h3 style={{ marginBottom: '20px', color: '#222' }}>{isEdit ? 'Edit Area Details' : 'Area Details'}</h3>
 
-        <label style={{ display: 'block', marginBottom: '15px', color: '#333' }}>
-          Area ID:
-          <input
-            type="text"
-            name="areaId"
-            value={areaData.areaId}
-            readOnly
-            style={{
-              width: '100%',
-              marginTop: '6px',
-              padding: '8px',
-              border: '1.5px solid #bbb',
-              borderRadius: '6px',
-              backgroundColor: '#f9f9f9',
-              fontWeight: '600',
-              color: '#555',
-              cursor: 'not-allowed',
-              userSelect: 'none'
-            }}
-          />
-        </label>
-
+        {isEdit && (
+          <label style={{ display: 'block', marginBottom: '15px', color: '#333' }}>
+            Area ID:
+            <input
+              type="text"
+              name="areaId"
+              value={areaData.areaId}
+              readOnly
+              style={{
+                width: '100%',
+                marginTop: '6px',
+                padding: '8px',
+                border: '1.5px solid #bbb',
+                borderRadius: '6px',
+                backgroundColor: '#f9f9f9',
+                fontWeight: '600',
+                color: '#555',
+                cursor: 'not-allowed',
+                userSelect: 'none'
+              }}
+            />
+          </label>
+        )}
         <label style={{ display: 'block', marginBottom: '15px', color: '#333' }}>
           Area Name:
           <input

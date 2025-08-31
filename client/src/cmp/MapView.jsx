@@ -183,7 +183,15 @@ const handleMarkerDive = async (marker) => {
       formData.append('lng', currentLatLng?.lng || 500);
 
       axios.post(`http://localhost:8080/areas/upload`, formData)
-        .then(res => console.log("Saved:", res.data))
+        .then(res => {
+          console.log("Saved:", res.data);
+          const newAreaIdMatch = res.data.match(/Area added with ID: (\d+)/);
+          const newAreaId = newAreaIdMatch ? newAreaIdMatch[1] : null;
+          setMarkers(prev => prev.map(marker => 
+            marker.areaId === areaData.areaId ? { ...marker, areaId: newAreaId } : marker
+          ));
+          setAreaData(prev => ({ ...prev, areaId: newAreaId }));
+        })
         .catch(err => console.error("Error saving area:", err));
     }
   };
