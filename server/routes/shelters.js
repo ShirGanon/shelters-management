@@ -47,9 +47,9 @@ router.get("/details/:id", async (req, res) => {
         res.send(shelter);
     });
 })
-router.post("/add", validateParams(["name", "capacity", "status", "accessibility", "lat", "lng", "area_id"]), async(req, res) => {
-    const { name, capacity, status, accessibility, lat, lng, area_id } = req.body;
-    await addShelter({ name, capacity, status, accessibility, lat, lng, area_id }).then((shelterId) => {
+router.post("/add", validateParams(["name", "capacity", "status", "accessibility", "floor", "description", "lat", "lng", "area_id"]), async(req, res) => {
+    const { name, capacity, status, accessibility, floor, description, lat, lng, area_id } = req.body;
+    await addShelter({ name, capacity, status, accessibility, floor, description, lat, lng, area_id }).then((shelterId) => {
         console.log(`Shelter added with ID: ${shelterId}`);
         res.status(201).send(`Shelter added with ID: ${shelterId}`);
     }).catch((err) => {
