@@ -327,12 +327,14 @@ const handleMarkerDive = async (marker) => {
 
   const handleSaveShelter = () => {
     if (editShelterIndex !== null) {
-      const updatedMarkers = [...markers];
-      updatedMarkers[editShelterIndex] = {
-        ...updatedMarkers[editShelterIndex],
-        ...shelterData,
-      };
-      setMarkers(updatedMarkers);
+      // Update the shelter in the shelterList state
+      setShelterList(prevShelters => {
+        const updatedShelters = prevShelters.map(shelter =>
+          shelter.shelterId === shelterData.shelterId ? { ...shelter, ...shelterData } : shelter
+        );
+        return updatedShelters;
+      });
+      
       setPopupVisible(false);
       setEditShelterIndex(null);
       setAddShelterMode(false);
