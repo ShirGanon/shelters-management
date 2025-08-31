@@ -1,16 +1,19 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 import Main from "./cmp/Main";
+import LandingPage from "./cmp/LandingPage";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [showMain, setShowMain] = useState(false);
 
   return (
-    <Main />
+    showMain ? (
+      <Main />
+    ) : (
+      <LandingPage onStart={() => setShowMain(true)} />
+    )
   );
 }
 
-export default App;
+export default App;
