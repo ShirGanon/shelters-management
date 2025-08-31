@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) => {
+const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId, onDeleteArea }) => {
   const areaMarkers = Array.isArray(markers) ? markers.filter(marker => !marker.shelterId) : [];
   return (
     <div
@@ -68,6 +68,21 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId }) =>
                   }}
                 >
                   Area Scope
+                </button>
+                <button
+                  onClick={() => onDeleteArea(marker.areaId)}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 6px rgba(220,53,69,0.5)',
+                  }}
+                >
+                  Delete
                 </button>
               </div>
             </li>

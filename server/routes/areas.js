@@ -119,6 +119,7 @@ router.delete("/delete/:id", async (req, res) => {
   await deleteArea(id)
     .then((success) => {
       if (success) {
+        console.log(`Area with ID ${id} deleted`);
         res.send(`Area with ID ${id} deleted`);
       } else {
         res.status(404).send("Area not found");

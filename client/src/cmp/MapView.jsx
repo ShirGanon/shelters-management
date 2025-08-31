@@ -141,6 +141,7 @@ const handleMarkerDive = async (marker) => {
     setModalVisible(true);
     setEditIndex(index);
     setAddMode(false);
+    console.log("handleMarkerClick: Setting editIndex to", index);
   };
 
   const handleSave = () => {
@@ -194,11 +195,23 @@ const handleMarkerDive = async (marker) => {
     }
   };
 
-  const handleDelete = () => {
-    if (editIndex === null) return;
+  const handleDelete = (areaIdToDeleteFromList = null) => {
+    let areaIdToDelete = areaIdToDeleteFromList;
+    let indexToDelete = editIndex;
 
-    const areaIdToDelete = markers[editIndex].areaId;
-    setMarkers(prev => prev.filter((_, i) => i !== editIndex));
+    if (areaIdToDeleteFromList) {
+      indexToDelete = markers.findIndex(marker => marker.areaId === areaIdToDeleteFromList);
+      if (indexToDelete === -1) {
+        console.error("Area not found for deletion:", areaIdToDeleteFromList);
+        return;
+      }
+      areaIdToDelete = markers[indexToDelete].areaId;
+    } else {
+      if (editIndex === null) return;
+      areaIdToDelete = markers[editIndex].areaId;
+    }
+
+    setMarkers(prev => prev.filter((_, i) => i !== indexToDelete));
     setModalVisible(false);
     setEditIndex(null);
 
@@ -384,6 +397,7 @@ const handleMarkerDive = async (marker) => {
           onModifyClick={handleMarkerClick}
           onDiveClick={handleDiveIn}
           selectedAreaId={selectedAreaId}
+          onDeleteArea={handleDelete}
         />
       )}
 
@@ -455,7 +469,7 @@ const handleMarkerDive = async (marker) => {
           setAddMode(false);
         }}
         onSave={handleSave}
-        onDelete={handleDelete}
+        onDelete={() => handleDelete(areaData.areaId)}
         areaData={areaData}
         setAreaData={setAreaData}
         isEdit={editIndex !== null}
