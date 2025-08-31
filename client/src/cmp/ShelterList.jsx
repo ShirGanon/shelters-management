@@ -17,18 +17,19 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId, onDe
         zIndex: 1000,
         width: '400px',
         fontFamily: 'cursive',
+        textAlign: 'center',
       }}
     >
       <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '2.2rem' }}>Area List</h3>
       {areaMarkers.length === 0 ? (
-        <p style={{ color: '#555', fontSize: '0.9rem' }}>No areas added yet.</p>
+        <p style={{ color: '#555', fontSize: '0.9rem', textAlign: 'center' }}>No areas added yet.</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {areaMarkers.map((marker, index) => (
             <li
               key={marker.areaId || `marker-${index}`}
               style={{
-                padding: '10px',
+                padding: '8px',
                 borderBottom: '1px solid #eee',
                 color: '#333',
                 fontSize: '0.95rem',
@@ -38,7 +39,8 @@ const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId, onDe
               <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
                 {marker.description || 'No description'}
               </p>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px',
+                           justifyContent: 'center' }}>
                 <button
                   onClick={() => onModifyClick(marker, index)}
                   style={{
