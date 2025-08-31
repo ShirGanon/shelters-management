@@ -54,7 +54,6 @@ const MapView = ({ imageUrl }) => {
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [shelterData, setShelterData] = useState({
     areaId: '',
-    shelterId: '',
     name: '',
     floor: '',
     status: '',
@@ -279,7 +278,6 @@ const handleMarkerDive = async (marker) => {
       setPopupVisible(true);
       setShelterData({
         areaId: selectedAreaId,
-        shelterId: `shelter-${areaCounter}`,
         name: '',
         floor: '',
         status: '',
@@ -307,7 +305,6 @@ const handleMarkerDive = async (marker) => {
     
     setShelterData({
       areaId: shelter.areaId,
-      shelterId: shelter.shelterId,
       name: shelter.name || '',
       floor: shelter.floor || '',
       status: shelter.status || '',
@@ -315,7 +312,8 @@ const handleMarkerDive = async (marker) => {
       capacity: shelter.capacity || '',
       description: shelter.description || '',
       imageUrl: shelter.imageUrl || selectedImageUrl,
-      latlng: shelter.latlng
+      latlng: shelter.latlng,
+      shelterId: shelter.shelterId,
     });
 
     setPopupPosition({
@@ -362,10 +360,8 @@ const handleMarkerDive = async (marker) => {
         shelterId: shelterData.shelterId,
         ...shelterData,
       };
-      setShelterList(prev => [...prev, newMarker]);
       setPopupVisible(false);
       setAddShelterMode(false);
-      setAreaCounter(prev => prev + 1);
 
       const formData = new URLSearchParams();
       formData.append('area_id', shelterData.areaId);
@@ -381,7 +377,14 @@ const handleMarkerDive = async (marker) => {
       axios.post("http://localhost:8080/shelters/add", formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
-        .then(res => console.log("Saved shelter:", res.data))
+        .then(res => {
+          console.log("Saved shelter:", res.data);
+          const newShelterIdMatch = res.data.match(/Shelter added with ID: (\d+)/);
+          const newShelterId = newShelterIdMatch ? newShelterIdMatch[1] : null;
+          setShelterList(prev => [...prev, { ...newMarker, shelterId: newShelterId }]);
+          setPopupVisible(false);
+          setAddShelterMode(false);
+        })
         .catch(err => console.error("Error saving shelter:", err));
     }
   };
@@ -455,7 +458,9 @@ const handleMarkerDive = async (marker) => {
               areaImageUrl={selectedImageUrl}
               isEdit={editShelterIndex !== null}
               onDelete={() => {
-                handleDeleteShelter(shelterData.shelterId);
+                if (editShelterIndex !== null) {
+                  handleDeleteShelter(shelterData.shelterId);
+                }
                 setPopupVisible(false);
               }}
             />

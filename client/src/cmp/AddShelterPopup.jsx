@@ -33,12 +33,13 @@ const AddShelterPopup = ({
 
     if (
       !shelterData.name ||
+      !shelterData.floor ||
       !shelterData.status ||
       !shelterData.capacity ||
       !shelterData.accessibility
     ) {
       alert(
-        'Please fill in all required fields: Shelter Name, Status, Capacity, and Accessibility.'
+        'Please fill in all required fields: Shelter Name, Floor, Status, Capacity, and Accessibility.'
       );
       return;
     }
@@ -112,40 +113,17 @@ const AddShelterPopup = ({
           />
         </label>
 
-        {/* Shelter ID */}
-        <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
-            Shelter ID: <span style={{ color: 'red' }}>*</span>
-          </span>
-          <input
-            type="text"
-            name="shelterId"
-            value={shelterData.shelterId || ''}
-            onChange={handleChange}
-            required={!isEdit}
-            readOnly={isEdit}
-            style={{
-              width: '100%',
-              padding: '8px',
-              borderRadius: '4px',
-              border: '1px solid #ddd',
-              fontSize: '14px',
-              backgroundColor: isEdit ? '#f5f5f5' : 'white',
-              color: isEdit ? '#666' : 'black',
-            }}
-          />
-        </label>
-
         {/* Floor */}
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
-            Floor:
+            Floor: <span style={{ color: 'red' }}>*</span>
           </span>
           <input
             type="number"
             name="floor"
             value={shelterData.floor || ''}
             onChange={handleChange}
+            required
             style={{
               width: '100%',
               padding: '8px',
