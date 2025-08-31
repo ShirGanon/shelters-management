@@ -154,18 +154,12 @@ const handleMarkerDive = async (marker) => {
       setMarkers(updatedMarkers);
       setModalVisible(false);
 
-      const formData = new FormData();
-      formData.append('areaId', areaData.areaId);
+      const formData = new URLSearchParams();
       formData.append('name', areaData.name);
       formData.append('description', areaData.description);
-      if (areaData.image) {
-        formData.append('image', areaData.image);
-      }
-      formData.append('lat', currentLatLng?.lat || 500);
-      formData.append('lng', currentLatLng?.lng || 500);
 
-      axios.put(`http://localhost:8080/areas/${areaData.areaId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      axios.put(`http://localhost:8080/areas/update/${areaData.areaId}`, formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
         .then(res => console.log("Updated:", res.data))
         .catch(err => console.error("Error updating area:", err));

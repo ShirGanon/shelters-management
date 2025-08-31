@@ -38,6 +38,32 @@ export const addArea = async ({ name, description, filename, img, lat, lng }) =>
     }
 };
 
+export const updateArea = async (id, { name, description, filename, img, lat, lng }) => {
+    // Prepare fields to update (only those not null or undefined)
+    const fields = { name, description, filename, img, lat, lng };
+    const updates = Object.entries(fields)
+        .filter(([, value]) => value != null);
+
+    if (!updates.length) {
+        throw new Error('At least one field must be provided to update the area');
+    }
+
+    const setClause = updates.map(([key]) => `${key} = ?`).join(', ');
+    const values = updates.map(([, value]) => value).concat(id);
+
+    try {
+        const [result] = await db.query(
+            `UPDATE areas SET ${setClause} WHERE id = ?`,
+            values
+        );
+        return result.affectedRows > 0;
+    } catch (error) {
+        const message = error.sqlMessage || 'Failed to update area';
+        const sqlState = error.sqlState || 'UNKNOWN';
+        throw new Error(`${message} (SQLSTATE: ${sqlState})`);
+    }
+};
+
 export const deleteArea = async (id) => {
     try {
         const [result] = await db.query('DELETE FROM areas WHERE id = ?', [id]);

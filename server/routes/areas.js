@@ -3,7 +3,7 @@ import multer from "multer";
 import fs from "fs/promises";
 import path from "path";
 const router = express.Router();
-import { getAllAreas, getAreaById, addArea, deleteArea } from "../models/areasModel.js";
+import { getAllAreas, getAreaById, addArea, deleteArea, updateArea } from "../models/areasModel.js";
 
 // Ensure uploads directory exists (async, before multer setup)
 const uploadsDir = path.join(process.cwd(), "uploads");
@@ -110,6 +110,39 @@ router.post("/upload", upload.single("image"), validateParams(["name", "descript
     }
   }
 );
+
+router.put("/update/:id", async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).send("Area ID is required");
+  }
+  console.log("Update request body:", req.body);
+  const allowedFields = ["name", "description"];
+  const updateFields = Object.fromEntries(
+    allowedFields
+      .filter((field) => req.body[field] !== undefined)
+      .map((field) => [field, req.body[field]])
+  );
+
+  if (Object.keys(updateFields).length === 0) {
+    return res.status(400).send("At least one field must be provided to update the area");
+  }
+
+  await updateArea(id, updateFields)
+    .then((success) => {
+      if (success) {
+        console.log(`Area with ID ${id} updated`);
+        res.send(`Area with ID ${id} updated`);
+      } else {
+        res.status(404).send("Area not found or no changes made");
+      }
+    })
+    .catch((err) => {
+      console.error("Error updating area:", err);
+      res.status(500).send("Error updating area: " + err.message);
+    });
+});
+
 
 router.delete("/delete/:id", async (req, res) => {
   const { id } = req.params;
