@@ -1,0 +1,98 @@
+import React from 'react';
+
+const ShelterList = ({ markers, onModifyClick, onDiveClick, selectedAreaId, onDeleteArea }) => {
+  const areaMarkers = Array.isArray(markers) ? markers.filter(marker => !marker.shelterId) : [];
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '0px',
+        left: '10px',
+        backgroundColor: 'white',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        maxHeight: 'calc(100vh - 20px)', // Adjusted max-height to prevent overflow
+        overflowY: 'auto', // Corrected to 'auto' for proper scrolling
+        zIndex: 1000,
+        width: '400px',
+        fontFamily: 'cursive',
+        textAlign: 'center',
+      }}
+    >
+      <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '2.2rem' }}>Area List</h3>
+      {areaMarkers.length === 0 ? (
+        <p style={{ color: '#555', fontSize: '0.9rem', textAlign: 'center' }}>No areas added yet.</p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          {areaMarkers.map((marker, index) => (
+            <li
+              key={marker.areaId || `marker-${index}`}
+              style={{
+                padding: '8px',
+                borderBottom: '1px solid #eee',
+                color: '#333',
+                fontSize: '0.95rem',
+              }}
+            >
+              <strong>{marker.name || `Area ${marker.areaId || index + 1}`}</strong>
+              <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
+                {marker.description || 'No description'}
+              </p>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px',
+                           justifyContent: 'center' }}>
+                <button
+                  onClick={() => onModifyClick(marker, index)}
+                  style={{
+                    backgroundColor: '#4a90e2',
+                    color: 'white',
+                    padding: '6px 12px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 6px rgba(74,144,226,0.5)',
+                  }}
+                >
+                  Modify
+                </button>
+                <button
+                  onClick={async () => await onDiveClick(marker.areaId, marker.imageUrl)}
+                  style={{
+                    backgroundColor: '#5cb85c',
+                    color: 'white',
+                    padding: '8px 12px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 6px rgba(92,184,92,0.5)',
+                  }}
+                >
+                  Area Scope
+                </button>
+                <button
+                  onClick={() => onDeleteArea(marker.areaId)}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    padding: '6px 12px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 6px rgba(220,53,69,0.5)',
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export default ShelterList;

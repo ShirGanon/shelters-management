@@ -1,6 +1,6 @@
 import db from '../utils/mysql.js';
 
-const sheltersFullSchema = ['id', 'name', 'capacity', 'status', 'accessibility', 'lat', 'lng', 'area_id', 'created_at'];
+const sheltersFullSchema = ['id', 'name', 'capacity', 'status', 'accessibility', 'floor', 'description', 'lat', 'lng', 'area_id', 'created_at'];
 
 export const getAllShelters = async () => 
 {
@@ -28,9 +28,31 @@ export const getSheltersByAreaId = async (areaId) =>
 
 export const addShelter = async (shelter) =>
 {
-    const { name, capacity, status, accessibility, lat, lng, area_id } = shelter;
-    const [result] = await db.query('INSERT INTO shelters (name, capacity, status, accessibility, lat, lng, area_id) VALUES (?, ?, ?, ?, ?, ?, ?)', [name, capacity, status, accessibility, lat, lng, area_id]);
+    const { name, capacity, status, accessibility, floor, description, lat, lng, area_id } = shelter;
+    const [result] = await db.query('INSERT INTO shelters (name, capacity, status, accessibility, floor, description, lat, lng, area_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [name, capacity, status, accessibility, floor, description, lat, lng, area_id]);
     return result.insertId;
+}
+
+export const updateShelter = async (id, shelter) => {
+    const { name, capacity, status, accessibility, floor, description, lat, lng, area_id } = shelter;
+    // Build dynamic query to update only non-null fields
+    const fields = [];
+    const values = [];
+    for (const key of ['name', 'capacity', 'status', 'accessibility', 'floor', 'description',]) {
+        if (shelter[key] !== undefined && shelter[key] !== null) {
+            fields.push(`${key} = ?`);
+            values.push(shelter[key]);
+        }
+    }
+    if (fields.length === 0) {
+        return false; // Nothing to update
+    }
+    values.push(id);
+    const [result] = await db.query(
+        `UPDATE shelters SET ${fields.join(', ')} WHERE id = ?`,
+        values
+    );
+    return result.affectedRows > 0;
 }
 
 export const deleteShelter = async (id) =>

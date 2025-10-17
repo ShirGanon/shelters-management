@@ -1,0 +1,388 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
+
+const ImageViewWithShelters = ({
+  markers,
+  shelterList,
+  setShelterList,
+  imageUrl,
+  onImageClick,
+  addShelterMode,
+  onAddShelterClick,
+  areaId,
+  onEditShelter,
+  onBackClick,
+}) => {
+  const [filters, setFilters] = useState({
+    status: '',
+    accessibility: '',
+    minCapacity: ''
+  });
+
+  useEffect(() => {
+    if (!areaId) {
+      setShelterList([]);
+      return;
+    }
+    axios.get(`http://localhost:8080/shelters/area/${areaId}`)
+      .then(res => {
+        const shelters = Array.isArray(res.data)
+          ? res.data.map(shelter => ({
+              ...shelter,
+              shelterId: shelter.id,
+              areaId: shelter.area_id,
+              latlng: { lat: shelter.lat, lng: shelter.lng }
+            }))
+          : [];
+        setShelterList(shelters);
+      })
+      .catch(err => {
+        console.error("Failed to fetch shelters:", err);
+        setShelterList([]);
+      });
+  }, [areaId]);
+
+  // Filter shelters based on filters
+  const filteredShelters = useMemo(() => {
+    return shelterList.filter(shelter => {
+      const matchesStatus = !filters.status || shelter.status === filters.status;
+      const matchesAccessibility = !filters.accessibility || shelter.accessibility === filters.accessibility;
+      const matchesCapacity = !filters.minCapacity || (shelter.capacity && shelter.capacity >= parseInt(filters.minCapacity));
+      return matchesStatus && matchesAccessibility && matchesCapacity;
+    });
+  }, [shelterList, filters]);
+
+  const handleClick = (e) => {
+    if (addShelterMode) {
+      onImageClick(e);
+    }
+  };
+
+  const handleShelterClick = (shelter, e) => {
+    e.stopPropagation();
+    if (!addShelterMode && onEditShelter) {
+      onEditShelter(shelter);
+    }
+  };
+
+  const ShelterIcon = ({ size = 32, color = '#dc3545' }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
+    >
+      <path d="M12 2L2 9h3v11h6v-6h2v6h6V9h3L12 2zm0 2.84L18 9v9h-2v-6h-6v6H8V9l4-4.16z"/>
+    </svg>
+  );
+
+  return (
+    <>
+      {/* Shelters List */}
+      <div
+        style={{
+          position: 'fixed',
+          top: '0px',
+          left: '0px',
+          backgroundColor: 'white',
+          padding: '15px',
+          borderRadius: '0 0 8px 8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          height: '100vh',
+          maxHeight: '1000px',
+          overflowY: 'auto',
+          zIndex: 1003,
+          width: '400px',
+          fontFamily: 'cursive',
+        }}
+      >
+        <h3 style={{ marginBottom: '15px', color: '#222', fontSize: '1.2rem' }}>
+        Shelters in Area {areaId || 'N/A'}
+        </h3>
+        
+        {/* Filters Section */}
+        <div style={{ marginBottom: '15px' }}>
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Status:
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            >
+              <option value="">All</option>
+              <option value="Available">Available</option>
+              <option value="Fully Occupied">Fully Occupied</option>
+              <option value="Under Renovation">Under Renovation</option>
+            </select>
+          </label>
+
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Accessibility:
+            <select
+              value={filters.accessibility}
+              onChange={(e) => setFilters({ ...filters, accessibility: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            >
+              <option value="">All</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </label>
+
+          <label style={{ display: 'block', marginBottom: '8px' }}>
+            Min Capacity:
+            <input
+              type="number"
+              value={filters.minCapacity}
+              onChange={(e) => setFilters({ ...filters, minCapacity: e.target.value })}
+              placeholder="Enter minimum capacity"
+              style={{
+                width: '100%',
+                padding: '8px',
+                borderRadius: '6px',
+                border: '1px solid #ddd',
+                marginTop: '4px'
+              }}
+            />
+          </label>
+        </div>
+
+        {/* Results Counter */}
+        <div style={{
+          marginBottom: '10px',
+          fontSize: '0.85rem',
+          color: '#666',
+          fontStyle: 'italic'
+        }}>
+          {filteredShelters.length === 0 
+            ? 'No shelters found' 
+            : `Showing ${filteredShelters.length} shelter${filteredShelters.length === 1 ? '' : 's'}`}
+        </div>
+
+        {/* Shelter List */}
+        {filteredShelters.length === 0 ? (
+          <p style={{ color: '#555', fontSize: '0.9rem' }}>
+            No shelters match the filter.
+          </p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {filteredShelters.map((shelter, index) => (
+              <li
+                key={shelter.shelterId || `shelter-${index}`}
+                style={{
+                  padding: '10px',
+                  borderBottom: '1px solid #eee',
+                  color: '#333',
+                  fontSize: '0.95rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  backgroundColor: 'transparent',
+                  borderRadius: '4px',
+                  transition: 'background-color 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#f8f9fa';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                }}
+              >
+                <ShelterIcon size={18} color="#dc3545" />
+                <div style={{ flex: 1 }}>
+                  <strong>{shelter.name || `Shelter ${shelter.shelterId || index + 1}`}</strong>
+                  
+                  {/* Shelter Details */}
+                  <div style={{ margin: '5px 0', fontSize: '0.8rem', color: '#888' }}>
+                    {shelter.shelterId && (
+                      <span style={{ marginRight: '10px' }}>
+                        ID: <strong>{shelter.shelterId}</strong>
+                      </span>
+                    )}
+                    {shelter.floor && (
+                      <span style={{ marginRight: '10px' }}>
+                        Floor: <strong>{shelter.floor}</strong>
+                      </span>
+                    )}
+                    {shelter.capacity && (
+                      <span style={{ marginRight: '10px' }}>
+                        Capacity: <strong>{shelter.capacity}</strong>
+                      </span>
+                    )}
+                    {shelter.accessibility && (
+                      <span>
+                        Accessible: <strong>{shelter.accessibility}</strong>
+                      </span>
+                    )}
+                  </div>
+                  
+                  <p style={{ margin: '5px 0 0', fontSize: '0.85rem', color: '#666' }}>
+                    {shelter.description || 'No description'}
+                  </p>
+                  
+                  {shelter.status && (
+                    <span style={{ 
+                      fontSize: '0.8rem', 
+                      color: shelter.status === 'Available' ? '#28a745' : 
+                             shelter.status === 'Fully Occupied' ? '#dc3545' : '#ffc107',
+                      fontWeight: '600',
+                      display: 'block',
+                      marginTop: '3px'
+                    }}>
+                      Status: {shelter.status}
+                    </span>
+                  )}
+                  
+                  <button
+                    onClick={() => onEditShelter && onEditShelter(shelter)}
+                    style={{
+                      marginTop: '8px',
+                      padding: '6px 12px',
+                      fontSize: '0.8rem',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#0056b3';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#007bff';
+                    }}
+                  >
+                    Edit Shelter
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Image Container */}
+      <div
+        style={{
+          position: 'relative',
+          // top: '-160px',
+          height: '600px',
+          width: '100%',
+          borderRadius: '8px',
+          boxShadow: '0 3px 10px rgba(0,0,0,0.2)',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Toolbar */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            display: 'flex',
+            gap: '10px',
+            background: 'rgba(255,255,255,0.85)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            zIndex: 1000,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+          }}
+        >
+          {/* Back Button */}
+          <button
+            onClick={onBackClick} 
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: '#d9534f',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            Back
+          </button>
+
+          {/* Add New Shelter */}
+          <button
+            onClick={onAddShelterClick}
+            style={{
+              padding: '8px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: addShelterMode ? '#dc3545' : '#05cb5a',
+              color: 'white',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            {addShelterMode ? 'Cancel Add Shelter' : 'Add New Shelter'}
+          </button>
+        </div>
+
+        <img
+          src={imageUrl}
+          alt="Area Detail"
+          onClick={handleClick}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            borderRadius: '8px',
+            cursor: addShelterMode ? 'crosshair' : 'default',
+          }}
+        />
+
+        {Array.isArray(shelterList) && shelterList
+          .map((marker, index) => (
+            marker.latlng && (
+              <div
+                key={marker.shelterId || `marker-${index}`}
+                style={{
+                  position: 'absolute',
+                  top: `${(marker.latlng.lat / 1000) * 100}%`,
+                  left: `${(marker.latlng.lng / 1000) * 100}%`,
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 1002,
+                  cursor: addShelterMode ? 'default' : 'pointer',
+                  transition: 'transform 0.2s ease',
+                }}
+                title={addShelterMode ? '' : `Click to edit: ${marker.name || 'Shelter'} - ${marker.status || 'Unknown status'}`}
+                onClick={(e) => handleShelterClick(marker, e)}
+                onMouseEnter={(e) => {
+                  if (!addShelterMode) {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!addShelterMode) {
+                    e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                  }
+                }}
+              >
+                <ShelterIcon size={36} color="#dc3545" />
+              </div>
+            )
+          ))
+        }
+      </div>
+    </>
+  );
+};
+
+export default ImageViewWithShelters;

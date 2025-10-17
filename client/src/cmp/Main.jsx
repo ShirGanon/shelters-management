@@ -15,9 +15,13 @@ export default function Main() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center">
-      {/* <h1>Welcome to the shelters API</h1> */}
-       <MapView imageUrl="../Holon.png" />
-    </div>
-  )
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start'}}>
+      <div style={{ position: 'fixed', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 9999 }}>
+        <img src="../Main_Logo.png" alt="Shelter Logo" style={{ width: '600px', height: '180px' }} />
+      </div>
+      <div style={{ paddingTop: '200px', flexGrow: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <MapView imageUrl="../Holon.png" />
+      </div>
+    </div>
+  )
 }
