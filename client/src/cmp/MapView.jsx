@@ -13,7 +13,7 @@ const imageBounds = [[0, 0], [1000, 1000]];
 
 const getAreaImageByID  = async (areaId) => {
   try {
-    const res = await axios.get(`http://localhost:8080/areas/details/${areaId}?img=true`);
+    const res = await axios.get(`https://shelters-management.onrender.com/areas/details/${areaId}?img=true`);
     const img = res.data?.img;
     const filename = res.data?.filename || '';
     if (!img?.data) return null;
@@ -67,7 +67,7 @@ const MapView = ({ imageUrl }) => {
   const mapRef = useRef();
 
   useEffect(() => {
-    axios.get("http://localhost:8080/areas/list")
+    axios.get("https://shelters-management.onrender.com/areas/list")
       .then(res => {
         const data = Array.isArray(res.data) ? res.data.map((item, index) => ({
           ...item,
@@ -96,7 +96,7 @@ const handleMarkerDive = async (marker) => {
     setShowImageView(true);
 
     // Fetch shelters for this area
-    axios.get(`http://localhost:8080/shelters/area/${marker.areaId}`)
+    axios.get(`https://shelters-management.onrender.com/shelters/area/${marker.areaId}`)
       .then(res => {
         const shelters = Array.isArray(res.data)
           ? res.data.map(shelter => ({
@@ -158,7 +158,7 @@ const handleMarkerDive = async (marker) => {
       formData.append('name', areaData.name);
       formData.append('description', areaData.description);
 
-      axios.put(`http://localhost:8080/areas/update/${areaData.areaId}`, formData, {
+      axios.put(`https://shelters-management.onrender.com/areas/update/${areaData.areaId}`, formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
         .then(res => console.log("Updated:", res.data))
@@ -182,7 +182,7 @@ const handleMarkerDive = async (marker) => {
       formData.append('lat', currentLatLng?.lat || 500);
       formData.append('lng', currentLatLng?.lng || 500);
 
-      axios.post(`http://localhost:8080/areas/upload`, formData)
+      axios.post(`https://shelters-management.onrender.com/areas/upload`, formData)
         .then(res => {
           console.log("Saved:", res.data);
           const newAreaIdMatch = res.data.match(/Area added with ID: (\d+)/);
@@ -216,7 +216,7 @@ const handleMarkerDive = async (marker) => {
     setModalVisible(false);
     setEditIndex(null);
 
-    axios.delete(`http://localhost:8080/areas/delete/${areaIdToDelete}`)
+    axios.delete(`https://shelters-management.onrender.com/areas/delete/${areaIdToDelete}`)
       .then(res => console.log("Deleted:", res.data))
       .catch(err => console.error("Error deleting area:", err));
   };
@@ -263,7 +263,7 @@ const handleMarkerDive = async (marker) => {
 
   const handleDeleteShelter = (shelterIdToDelete) => {
     setShelterList(prev => prev.filter(shelter => shelter.shelterId !== shelterIdToDelete));
-    axios.delete(`http://localhost:8080/shelters/delete/${shelterIdToDelete}`)
+    axios.delete(`https://shelters-management.onrender.com/shelters/delete/${shelterIdToDelete}`)
       .then(res => console.log("Deleted shelter:", res.data))
       .catch(err => console.error("Error deleting shelter:", err));
   };
@@ -351,7 +351,7 @@ const handleMarkerDive = async (marker) => {
       formData.append('lat', shelterData.latlng?.lat || 500);
       formData.append('lng', shelterData.latlng?.lng || 500);
 
-      axios.put(`http://localhost:8080/shelters/update/${shelterData.shelterId}`, formData, {
+      axios.put(`https://shelters-management.onrender.com/shelters/update/${shelterData.shelterId}`, formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
         .then(res => console.log("Updated shelter:", res.data))
@@ -376,7 +376,7 @@ const handleMarkerDive = async (marker) => {
       formData.append('lat', newMarker.latlng.lat);
       formData.append('lng', newMarker.latlng.lng);
 
-      axios.post("http://localhost:8080/shelters/add", formData, {
+      axios.post("https://shelters-management.onrender.com/shelters/add", formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
         .then(res => {

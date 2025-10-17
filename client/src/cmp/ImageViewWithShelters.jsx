@@ -24,7 +24,7 @@ const ImageViewWithShelters = ({
       setShelterList([]);
       return;
     }
-    axios.get(`http://localhost:8080/shelters/area/${areaId}`)
+    axios.get(`https://shelters-management.onrender.com/shelters/area/${areaId}`)
       .then(res => {
         const shelters = Array.isArray(res.data)
           ? res.data.map(shelter => ({

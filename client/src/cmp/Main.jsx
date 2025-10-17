@@ -6,7 +6,7 @@ export default function Main() {
   const [shelters, setShelters] = useState([])
 
   useEffect(() => {
-    axios.get('http://localhost:8080/shelters/list').then((res) => {
+    axios.get('https://shelters-management.onrender.com/shelters/list').then((res) => {
       setShelters(res.data ? res.data : []);
     }).catch((err) => {
       setShelters([]);
