@@ -5,7 +5,7 @@ const LandingPage = ({ onStart }) => {
   return (
     <header className="hero">
       <div className="overlay"></div>
-      <img src="../HITLogo.png" alt="HIT Logo" className="HITlogo" />
+      <img src="/HITLogo.png" alt="HIT Logo" className="HITlogo" />
       <div className="content">
         <h1>WELCOME TO THE SHELTER PROJECT</h1>
         <p>

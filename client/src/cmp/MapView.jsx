@@ -395,7 +395,7 @@ const handleMarkerDive = async (marker) => {
     <>
       {/* <h1 className="app-title">Welcome to Shelter API</h1> */}
       {/* <div className="logo-image-wrapper">
-        <img src="../Main_Logo.png" alt="Map" className="map-image" />
+        <img src="/Main_Logo.png" alt="Map" className="map-image" />
       </div> */}
 
       {!showImageView && (
